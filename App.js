@@ -1,0 +1,159 @@
+import HomeScreen from "./screens/HomeScreen";
+import OrderScreen from "./screens/OrderScreen";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { NavigationContainer } from "@react-navigation/native";
+import Welcome from "./screens/Welcome";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { LogBox } from "react-native";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { PaperProvider } from "react-native-paper";
+import DriverScreen from "./screens/DriverScreen";
+import SettingsScreen from "./screens/SettingsScreen";
+import ProfileScreen from "./screens/ProfileScreen";
+import SignUpScreen from "./(auth)/SignUpScreen";
+import SignInScreen from "./(auth)/SignInScreen";
+import OTPEntryScreen from "./(auth)/OTPEntryScreen";
+import RegistreScreen from "./(auth)/RegistreScreen";
+import OrderList from "./screens/OrderList";
+import RegisterScreen from "./(auth)/RegistreScreen";
+
+const Stack = createNativeStackNavigator();
+const Tab = createBottomTabNavigator();
+
+LogBox.ignoreAllLogs(["Non-serializable value found in the navigation state"]);
+
+function App() {
+  return (
+    <PaperProvider>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="Home">
+          <Stack.Screen
+            name="Home"
+            options={{ headerShown: false }}
+            component={HomeTabs}
+          />
+
+          <Stack.Screen
+            name="Order"
+            options={{ headerShown: false }}
+            component={OrderScreen}
+          />
+          <Stack.Screen
+            name="Driver"
+            options={{ headerShown: false }}
+            component={DriverScreen}
+          />
+          <Stack.Screen
+            name="OrderList"
+            options={{ headerShown: false }}
+            component={OrderList}
+          />
+
+          <Stack.Screen
+            name="Sign Up"
+            options={{ headerShown: false }}
+            component={SignUpScreen}
+          />
+          <Stack.Screen
+            name="Sign in"
+            options={{ headerShown: false }}
+            component={SignInScreen}
+          />
+          <Stack.Screen
+            name="Registre"
+            options={{ headerShown: false }}
+            component={RegistreScreen}
+          />
+          <Stack.Screen
+            name="OTP"
+            options={{ headerShown: false }}
+            component={OTPEntryScreen}
+          />
+          <Stack.Screen
+            name="Profile"
+            options={{ headerShown: false }}
+            component={ProfileScreen}
+          />
+          <Stack.Screen
+            name="Welcome"
+            options={{ headerShown: false }}
+            component={Welcome}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </PaperProvider>
+  );
+}
+
+function TabBarIcon(props) {
+  return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
+}
+
+function HomeTabs() {
+  return (
+    <Tab.Navigator
+      initialRouteName="home"
+      screenOptions={({ route }) => ({
+        headerShown: false,
+        tabBarShowLabel: true,
+        // tabBarIcon: ({ focused, color, size }) => menuIcons(route, focused),
+        tabBarStyle: {
+          size: 16,
+          // borderRadius: 12,
+          // marginBottom: 12,
+          // backgroundColor:'#dcdcdc',
+        },
+        // tabBarItemStyle: {
+        //   color: "#ff0000",
+        //   marginBottom: 16,
+        //   zIndex: 9999,
+        // },
+      })}
+    >
+      <Tab.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{
+          title: "Home",
+          // tabBarInactiveTintColor: "white",
+          // tabBarActiveTintColor: "white",
+          tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
+        }}
+      />
+      <Tab.Screen
+        name="OrderScreen"
+        component={OrderScreen}
+        options={{
+          title: "Orders",
+          // tabBarInactiveTintColor: "white",
+          // tabBarActiveTintColor: "white",
+          tabBarIcon: ({ color }) => (
+            <TabBarIcon name="shopping-bag" color={color} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="chats"
+        component={ProfileScreen}
+        options={{
+          title: "Chats",
+          // tabBarInactiveTintColor: "white",
+          // tabBarActiveTintColor: "white",
+          tabBarIcon: ({ color }) => <TabBarIcon name="wechat" color={color} />,
+        }}
+      />
+      <Tab.Screen
+        name="Settings"
+        component={SettingsScreen}
+        options={{
+          title: "Settings",
+          // tabBarInactiveTintColor: "white",
+          // tabBarActiveTintColor: "white",
+          tabBarIcon: ({ color }) => <TabBarIcon name="cog" color={color} />,
+        }}
+      />
+    </Tab.Navigator>
+  );
+}
+
+export default App;
