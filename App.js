@@ -16,6 +16,9 @@ import OTPEntryScreen from "./(auth)/OTPEntryScreen";
 import RegistreScreen from "./(auth)/RegistreScreen";
 import OrderList from "./screens/OrderList";
 import RegisterScreen from "./(auth)/RegistreScreen";
+import DetailsScreen from "./screens/DetailsScreen";
+import NotificationsScreen from "./screens/NotificationsScreen";
+import HistoryScreen from "./screens/HistoryScreen";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -79,6 +82,22 @@ function App() {
             options={{ headerShown: false }}
             component={Welcome}
           />
+          <Stack.Screen
+            name="Details"
+            options={{ headerShown: false }}
+            component={DetailsScreen}
+          />
+
+          <Stack.Screen
+            name="Notification"
+            options={{ headerShown: false }}
+            component={NotificationsScreen}
+          />
+          <Stack.Screen
+            name="History"
+            options={{ headerShown: false }}
+            component={HistoryScreen}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     </PaperProvider>
@@ -134,7 +153,7 @@ function HomeTabs() {
       />
       <Tab.Screen
         name="chats"
-        component={ProfileScreen}
+        component={HistoryScreen}
         options={{
           title: "Chats",
           // tabBarInactiveTintColor: "white",
@@ -144,7 +163,7 @@ function HomeTabs() {
       />
       <Tab.Screen
         name="Settings"
-        component={SettingsScreen}
+        component={NotificationsScreen}
         options={{
           title: "Settings",
           // tabBarInactiveTintColor: "white",
