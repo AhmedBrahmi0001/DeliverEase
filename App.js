@@ -19,6 +19,8 @@ import RegisterScreen from "./(auth)/RegistreScreen";
 import DetailsScreen from "./screens/DetailsScreen";
 import NotificationsScreen from "./screens/NotificationsScreen";
 import HistoryScreen from "./screens/HistoryScreen";
+import TrackingScreen from "./screens/TrackingScreen";
+import HelloScreen from "./screens/HelloScreen";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -98,6 +100,16 @@ function App() {
             options={{ headerShown: false }}
             component={HistoryScreen}
           />
+          <Stack.Screen
+            name="Tracking"
+            options={{ headerShown: false }}
+            component={TrackingScreen}
+          />
+          <Stack.Screen
+            name="Hello"
+            options={{ headerShown: false }}
+            component={HelloScreen}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     </PaperProvider>
@@ -141,7 +153,7 @@ function HomeTabs() {
       />
       <Tab.Screen
         name="OrderScreen"
-        component={OrderScreen}
+        component={DetailsScreen}
         options={{
           title: "Orders",
           // tabBarInactiveTintColor: "white",
@@ -153,7 +165,7 @@ function HomeTabs() {
       />
       <Tab.Screen
         name="chats"
-        component={HistoryScreen}
+        component={NotificationsScreen}
         options={{
           title: "Chats",
           // tabBarInactiveTintColor: "white",
@@ -163,7 +175,7 @@ function HomeTabs() {
       />
       <Tab.Screen
         name="Settings"
-        component={NotificationsScreen}
+        component={SettingsScreen}
         options={{
           title: "Settings",
           // tabBarInactiveTintColor: "white",

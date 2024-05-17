@@ -9,14 +9,16 @@ import {
 import { Card } from "react-native-paper";
 import { FontAwesome } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useNavigation } from "@react-navigation/native";
 
 export default function OrderScreen() {
+  const navigation = useNavigation();
   const handleSignOut = () => {
     // Handle sign out logic here
   };
 
   const CustomSettingCard = ({ title, subtitle, icon, href }) => (
-    <TouchableOpacity onPress={() => console.log(href)}>
+    <TouchableOpacity onPress={() => navigation.navigate(href)}>
       <Card.Title
         title={title}
         subtitle={subtitle}
@@ -35,10 +37,11 @@ export default function OrderScreen() {
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Settings</Text>
             <CustomSettingCard
+              onPress={() => navigation.navigate("Profile")}
               title="Account"
               subtitle="Manage your account"
               icon="user"
-              href="/profile"
+              href="Profile"
             />
             <CustomSettingCard
               title="Phone number"
@@ -50,7 +53,7 @@ export default function OrderScreen() {
               title="Notifications"
               subtitle="Manage notifications"
               icon="bell"
-              href="/notification"
+              href="Notification"
             />
             <CustomSettingCard
               title="Privacy Policy"

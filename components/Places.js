@@ -1,55 +1,69 @@
-import { View, Text, TouchableOpacity, ScrollView, Image } from "react-native";
 import React from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  StyleSheet,
+} from "react-native";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 import { theme } from "../theme";
-import { placesImages } from "../constants/placesImages";
 
 const Places = () => {
+  const places = ["Place 1", "Place 2", "Place 3", "Place 4", "Place 5"];
+
   return (
-    <View className="space-y-5 mx-3">
-      <View className="mx flex-row justify-between items-center">
-        <Text
-          styles={{ fontSize: wp(4) }}
-          className="font-semibold text-neutral-700"
-        >
-          places
-        </Text>
-        <TouchableOpacity>
-          <Text style={{ fontSize: wp(4), color: theme.text }}>See all</Text>
-        </TouchableOpacity>
-      </View>
+    <View style={styles.container}>
       <ScrollView
         horizontal
-        contentContainerStyle={{ paddingHorizontal: 15 }}
-        className="space-x-4"
+        contentContainerStyle={styles.scrollViewContent}
         showsHorizontalScrollIndicator={false}
       >
-        {placesImages.map((cat, index) => {
-          return (
-            <TouchableOpacity
-              key={index}
-              className="flex items-center space-y-2"
-            >
-              <Image
-                source={cat.image}
-                className="rounded-3xl"
-                style={{ width: wp(20), height: wp(19) }}
-              />
-              <Text
-                className="text-neutral-700 font-medium"
-                style={{ fontSize: wp(3) }}
-              >
-                {cat.title}
-              </Text>
-            </TouchableOpacity>
-          );
-        })}
+        {places.map((place, index) => (
+          <TouchableOpacity key={index} style={styles.placeButton}>
+            <Text style={styles.placeText}>{place}</Text>
+          </TouchableOpacity>
+        ))}
       </ScrollView>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+    marginTop: 16,
+    backgroundColor: "#f5f5f5",
+  },
+  scrollViewContent: {
+    paddingHorizontal: wp(3),
+    marginTop: hp(1),
+  },
+  placeButton: {
+    paddingHorizontal: wp(3),
+    paddingVertical: hp(1.5),
+    backgroundColor: theme.secondary,
+    borderRadius: wp(2),
+    marginRight: wp(3),
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  placeText: {
+    fontWeight: "bold",
+    fontSize: wp(4),
+    color: "#1079e3",
+    textTransform: "capitalize",
+  },
+});
 
 export default Places;

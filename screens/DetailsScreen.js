@@ -36,6 +36,7 @@ const DetailsScreen = (props) => {
         </TouchableOpacity>
         {/* Order button */}
         <TouchableOpacity
+          onPress={() => navigation.navigate("Tracking")}
           style={{
             backgroundColor: "rgba(255,255,255,0.5)",
             borderRadius: wp(6),
@@ -44,7 +45,6 @@ const DetailsScreen = (props) => {
             marginTop: hp(1),
           }}
           className="mr-3"
-          onPress={() => navigation.navigate("Order")}
         >
           <Text
             style={{

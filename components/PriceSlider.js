@@ -24,7 +24,7 @@ const PriceSlider = () => {
   const renderNotch = useCallback(() => <View style={styles.notch} />, []);
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container}> 
       <RangeSlider
         style={styles.slider}
         min={0}
@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
   thumb: {
     width: 20,
     height: 20,
-    backgroundColor: "#64748b",
+    backgroundColor: "#1079e3",
     borderRadius: 10,
   },
   rail: {
@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
   },
   railSelected: {
     height: 4,
-    backgroundColor: "#64748b",
+    backgroundColor: "#1079e3",
   },
   label: {
     color: "#333",
