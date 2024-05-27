@@ -21,6 +21,11 @@ import NotificationsScreen from "./screens/NotificationsScreen";
 import HistoryScreen from "./screens/HistoryScreen";
 import TrackingScreen from "./screens/TrackingScreen";
 import HelloScreen from "./screens/HelloScreen";
+import NewScreen from "./screens/NewScreen";
+import TripDetailsScreen from "./screens/TripDetailsScreen";
+import EnableLocationScreen from "./screens/EnableLocationScreen";
+import TrackTripsScreen from "./screens/TrackTripsScreen";
+import ReviewScreen from "./screens/ReviewScreen";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -96,6 +101,11 @@ function App() {
             component={NotificationsScreen}
           />
           <Stack.Screen
+            name="New"
+            options={{ headerShown: false }}
+            component={NewScreen}
+          />
+          <Stack.Screen
             name="History"
             options={{ headerShown: false }}
             component={HistoryScreen}
@@ -109,6 +119,26 @@ function App() {
             name="Hello"
             options={{ headerShown: false }}
             component={HelloScreen}
+          />
+          <Stack.Screen
+            name="Trip"
+            options={{ headerShown: false }}
+            component={TripDetailsScreen}
+          />
+          <Stack.Screen
+            name="Enable"
+            options={{ headerShown: false }}
+            component={EnableLocationScreen}
+          />
+          <Stack.Screen
+            name="Track"
+            options={{ headerShown: false }}
+            component={TrackTripsScreen}
+          />
+          <Stack.Screen
+            name="Review"
+            options={{ headerShown: false }}
+            component={ReviewScreen}
           />
         </Stack.Navigator>
       </NavigationContainer>

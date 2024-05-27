@@ -102,16 +102,16 @@ const ListCategories = () => {
               value === "price" ? styles.selectedButtonText : styles.buttonText,
           },
           {
-            value: "drive",
-            label: "Driving",
+            value: "place",
+            label: "Places",
             style: [
               styles.buttonStyle,
-              value === "drive"
+              value === "place"
                 ? styles.selectedButtonStyle
                 : styles.unselectedButtonStyle,
             ],
             labelStyle:
-              value === "drive" ? styles.selectedButtonText : styles.buttonText,
+              value === "place" ? styles.selectedButtonText : styles.buttonText,
           },
         ]}
       />
@@ -119,7 +119,7 @@ const ListCategories = () => {
       {/* Conditionally render components based on the selected value */}
       {value === "price" && <PriceSlider />}
       {value === "rate" && <RateStar />}
-      {value === "drive" && <Places />}
+      {value === "place" && <Places />}
     </SafeAreaView>
   );
 };
