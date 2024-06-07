@@ -14,6 +14,8 @@ import {
   PanGestureHandler,
 } from "react-native-gesture-handler";
 
+import TripDetails from "../components/TripDetails"; // Import the TripDetails component
+
 const screenHeight = Dimensions.get("window").height;
 
 const TrackingScreen = () => {
@@ -25,6 +27,7 @@ const TrackingScreen = () => {
   const [routeCoordinates, setRouteCoordinates] = useState([]);
   const [orderStatus, setOrderStatus] = useState("En Route");
   const [isModalVisible, setModalVisible] = useState(false);
+  const [tripState, setTripState] = useState("En Route"); // New state for trip details
 
   useEffect(() => {
     const ws = new WebSocket("wss://example.com/socket");
@@ -39,6 +42,7 @@ const TrackingScreen = () => {
       ]);
 
       setOrderStatus(data.status);
+      setTripState(data.status); // Update trip state based on data
     };
 
     return () => {
@@ -55,7 +59,6 @@ const TrackingScreen = () => {
     setDriverLocation({ latitude, longitude });
   };
 
-  // Set destination coordinates (e.g., when driver arrives at destination)
   useEffect(() => {
     if (driverLocation.latitude !== 0 && driverLocation.longitude !== 0) {
       setDestination({
@@ -67,6 +70,20 @@ const TrackingScreen = () => {
 
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
+  };
+
+  const handleAccept = () => {
+    if (tripState === "En Route") {
+      setTripState("Trip Details");
+    } else if (tripState === "Trip Details") {
+      setTripState("Trip Ended");
+    } else if (tripState === "Trip Ended") {
+      setTripState("En Route");
+    }
+  };
+
+  const handleDecline = () => {
+    alert("Trip Declined");
   };
 
   return (
@@ -99,9 +116,7 @@ const TrackingScreen = () => {
           strokeColor="#3b82f6"
         />
       </MapView>
-      <View style={styles.statusContainer}>
-        <Text style={styles.statusText}>Order Status: {orderStatus}</Text>
-      </View>
+      
       <TouchableOpacity style={styles.tripDetailsButton} onPress={toggleModal}>
         <Text style={styles.tripDetailsButtonText}>Show Trip Details</Text>
       </TouchableOpacity>
@@ -121,24 +136,11 @@ const TrackingScreen = () => {
               </TouchableOpacity>
             </View>
           </PanGestureHandler>
-          <View style={styles.tripDetails}>
-            <Text style={styles.driverName}>Alan</Text>
-            <View style={styles.ratingContainer}>
-              <FontAwesome name="star" size={16} color="orange" />
-              <Text style={styles.ratingText}>4.0</Text>
-            </View>
-            <Text style={styles.etaText}>3.92 mins • 0.89 kms</Text>
-            <Text style={styles.priceText}>£1.29</Text>
-            <Text style={styles.estimateText}>Estimated price</Text>
-          </View>
-          <View style={styles.buttonsContainer}>
-            <TouchableOpacity style={styles.declineButton}>
-              <Text style={styles.declineButtonText}>Decline</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.acceptButton}>
-              <Text style={styles.acceptButtonText}>Accept</Text>
-            </TouchableOpacity>
-          </View>
+          <TripDetails
+            tripState={tripState}
+            onAccept={handleAccept}
+            onDecline={handleDecline}
+          />
         </View>
       </Modal>
       <TouchableOpacity style={styles.refreshButton} onPress={handleRefresh}>
@@ -153,45 +155,35 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   map: {
-    flex: 1,
+    ...StyleSheet.absoluteFillObject,
   },
-  statusContainer: {
-    position: "absolute",
-    top: 20,
-    left: 20,
-    backgroundColor: "rgba(255, 255, 255, 0.8)",
-    padding: 10,
-    borderRadius: 5,
-    zIndex: 1,
-  },
-  statusText: {
-    fontSize: 16,
-  },
+  
   tripDetailsButton: {
     position: "absolute",
-    bottom: 140,
+    bottom: 100,
     left: 20,
     right: 20,
-    backgroundColor: "white",
+    backgroundColor: "black",
     padding: 15,
     borderRadius: 10,
     alignItems: "center",
-    zIndex: 1,
+    opacity:0.7,
   },
   tripDetailsButtonText: {
     fontSize: 18,
     fontWeight: "bold",
+    color: "white",
   },
   modal: {
     justifyContent: "flex-end",
     margin: 0,
   },
   modalContent: {
-    height: screenHeight / 2,
     backgroundColor: "white",
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    padding: 20,
+    padding: 22,
+    borderTopLeftRadius: 17,
+    borderTopRightRadius: 17,
+    minHeight: screenHeight * 0.4,
   },
   modalHeader: {
     flexDirection: "row",
@@ -203,70 +195,9 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
   },
-  tripDetails: {
-    alignItems: "center",
-  },
-  driverName: {
-    fontSize: 20,
-    fontWeight: "bold",
-  },
-  ratingContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginVertical: 10,
-  },
-  ratingText: {
-    fontSize: 16,
-    marginLeft: 5,
-  },
-  etaText: {
-    fontSize: 16,
-    marginBottom: 5,
-  },
-  priceText: {
-    fontSize: 24,
-    fontWeight: "bold",
-  },
-  estimateText: {
-    fontSize: 14,
-    color: "gray",
-  },
-  buttonsContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 20,
-  },
-  declineButton: {
-    flex: 1,
-    marginRight: 10,
-    backgroundColor: "white",
-    padding: 15,
-    borderRadius: 10,
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "black",
-  },
-  declineButtonText: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "black",
-  },
-  acceptButton: {
-    flex: 1,
-    marginLeft: 10,
-    backgroundColor: "black",
-    padding: 15,
-    borderRadius: 10,
-    alignItems: "center",
-  },
-  acceptButtonText: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "white",
-  },
   refreshButton: {
     position: "absolute",
-    bottom: 90,
+    bottom: 25,
     left: 20,
     backgroundColor: "#3b82f6",
     borderRadius: 50,

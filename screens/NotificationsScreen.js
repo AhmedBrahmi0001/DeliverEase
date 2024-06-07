@@ -5,62 +5,80 @@ import {
   FlatList,
   TouchableOpacity,
   StyleSheet,
+  ActivityIndicator,
 } from "react-native";
 import { Icon } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  useNotificationModels,
+  useMarkNotificationAsRead,
+  useMarkAllNotificationAsRead,
+} from "../hooks/notification.api";
 
 const NotificationsScreen = () => {
-  const [notifications, setNotifications] = useState([
-    {
-      id: 1,
-      title: "Welcome, Mr. Malek",
-      text: "Sign up success!",
-      isRead: false,
-    },
-    {
-      id: 2,
-      title: "New Books Dropped",
-      text: "Check out the new books section.",
-      isRead: false,
-    },
-    {
-      id: 3,
-      title: "Special Offer",
-      text: "Get 20% off on your next purchase.",
-      isRead: false,
-    },
-  ]);
-
-  const markAsRead = (id) => {
-    const updatedNotifications = notifications.map((notification) =>
-      notification.id === id ? { ...notification, isRead: true } : notification
+  //fetch notifications
+  const {
+    data: notifications,
+    error,
+    isloading,
+    refetch,
+  } = useNotificationModels();
+  const markAsReadMutation = useMarkNotificationAsRead();
+  const markAllAsReadMutation = useMarkAllNotificationAsRead();
+  //mark as read for one notification
+  const handleMarkAsRead = async (notificationId) => {
+    try {
+      await markAsReadMutation.mutateAsync({ notificationId });
+      refetch();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  //Render loading state
+  const handleMarkAllAsRead = async () => {
+    try {
+      await markAllAsReadMutation.mutateAsync(undefined);
+      refetch();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  // Render loading state
+  if (isloading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#3b82f6" />
+      </View>
     );
-    setNotifications(updatedNotifications);
-  };
+  }
 
-  const markAllAsRead = () => {
-    const updatedNotifications = notifications.map((notification) => ({
-      ...notification,
-      isRead: true,
-    }));
-    setNotifications(updatedNotifications);
-  };
+  // Render error state
+  if (error) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>Error: {error.message}</Text>
+      </View>
+    );
+  }
 
   const renderNotificationItem = ({ item }) => (
     <TouchableOpacity
-      style={[styles.notificationItem, item.isRead && styles.readNotification]}
-      onPress={() => markAsRead(item.id)}
+      style={[
+        styles.notificationItem,
+        item?.is_read && styles.readNotification,
+      ]}
+      onPress={() => handleMarkAsRead(item?.id)}
     >
       <View style={styles.iconContainer}>
         <Icon
-          source={item.isRead ? "bell" : "bell-ring"}
+          source={item?.is_read ? "bell" : "bell-ring"}
           size={20}
-          color={item.isRead ? "gray" : "#3b82f6"}
+          color={item?.isRead ? "gray" : "#3b82f6"}
         />
       </View>
       <View style={styles.notificationTextContainer}>
-        <Text style={styles.notificationTitle}>{item.title}</Text>
-        <Text style={styles.notificationText}>{item.text}</Text>
+        <Text style={styles.notificationTitle}>{item?.title}</Text>
+        <Text style={styles.notificationText}>{item?.text}</Text>
       </View>
     </TouchableOpacity>
   );
@@ -75,13 +93,13 @@ const NotificationsScreen = () => {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Notifications</Text>
-        <TouchableOpacity onPress={markAllAsRead}>
+        <TouchableOpacity onPress={handleMarkAllAsRead}>
           <Text style={styles.markAsReadAll}>Mark All as Read</Text>
         </TouchableOpacity>
       </View>
       <FlatList
-        data={notifications}
-        keyExtractor={(item) => item.id.toString()}
+        data={notifications?.data}
+        keyExtractor={(item) => (item?.id ? item.id.toString() : "")}
         renderItem={renderNotificationItem}
         ListEmptyComponent={renderEmptyState}
       />
@@ -148,6 +166,20 @@ const styles = StyleSheet.create({
   emptyStateText: {
     fontSize: 18,
     color: "gray",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  errorText: {
+    fontSize: 18,
+    color: "red",
   },
 });
 

@@ -24,7 +24,7 @@ const PriceSlider = () => {
   const renderNotch = useCallback(() => <View style={styles.notch} />, []);
 
   return (
-    <View style={styles.container}> 
+    <View style={styles.container}>
       <RangeSlider
         style={styles.slider}
         min={0}
@@ -50,7 +50,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     padding: 16,
     marginTop: 16,
-    backgroundColor: "#f5f5f5",
+    backgroundColor: "#D7DBDD",
+    borderRadius: 10,
   },
   thumb: {
     width: 20,

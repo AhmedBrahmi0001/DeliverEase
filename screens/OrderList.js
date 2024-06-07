@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   FlatList,
   StatusBar,
+  ActivityIndicator,
 } from "react-native";
 import { Button } from "react-native-paper";
 import { FontAwesome } from "@expo/vector-icons";
@@ -13,31 +14,19 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { useNavigation } from "@react-navigation/native";
 import HistoryScreen from "./HistoryScreen";
+import { useDeleteOrderModel, useOrderModels } from "../hooks/order.api";
+import TrackTripsScreen from "./TrackTripsScreen";
 
 const Tab = createMaterialTopTabNavigator();
 // Static orders data
-const orders = [
-  {
-    name: "Order 1",
-    date: "May 9, 2024",
-    addressArrival: "366 Main St N, Brampton Ontario L6V 1P8",
-    addressReturn: "123 Elm St, Toronto Ontario M5J 2T9",
-  },
-  {
-    name: "Order 2",
-    date: "May 8, 2024",
-    addressArrival: "770 Lawrence Ave W, Toronto Ontario M6A 3C6",
-    addressReturn: "456 Maple St, Brampton Ontario L6Y 3P8",
-  },
-];
 
 // Reusable OrderItem component
-function OrderItem({ order }) {
+function OrderItem({ order, onDelete }) {
   const navigation = useNavigation();
 
   return (
     <TouchableOpacity
-      onPress={() => navigation.navigate("Details", { order })}
+      onPress={() => navigation.navigate("New", { order: order.id })}
       style={styles.orderItem}
     >
       <View style={styles.orderInfoContainer}>
@@ -46,7 +35,10 @@ function OrderItem({ order }) {
         <Text style={styles.orderAddress}>{order.addressReturn}</Text>
       </View>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity onPress={() => {}} style={styles.deleteButton}>
+        <TouchableOpacity
+          onPress={() => onDelete(order.id)}
+          style={styles.deleteButton}
+        >
           <FontAwesome name="trash" size={20} color="red" />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => {}} style={styles.confirmButton}>
@@ -62,12 +54,40 @@ function OrderItem({ order }) {
 
 // Today screen component
 function TodayScreen() {
+  const { data: orders, error, isLoading, refetch } = useOrderModels();
+  const deleteOrderMutation = useDeleteOrderModel();
+  const handleDeleteOrder = async (orderId) => {
+    try {
+      await deleteOrderMutation.mutateAsync(orderId);
+      refetch();
+    } catch (error) {
+      console.error("Error deleting order:", error);
+    }
+  };
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#3b82f6" />
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>Error: {error.message}</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.tabContainer}>
       <FlatList
-        data={orders}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item, index }) => <OrderItem order={item} />}
+        data={orders?.data}
+        keyExtractor={(item) => item?.id.toString()}
+        renderItem={({ item }) => (
+          <OrderItem order={item} onDelete={handleDeleteOrder} />
+        )}
         ListEmptyComponent={<Text>No orders for today</Text>}
       />
     </View>
@@ -93,8 +113,8 @@ export default function OrderList() {
         <Text style={styles.title}>My Orders</Text>
       </View>
       <Tab.Navigator>
-        <Tab.Screen name="Today" component={TodayScreen} />
-        <Tab.Screen name="history" component={HistoryScreen} />
+        <Tab.Screen name="All" component={TodayScreen} />
+        <Tab.Screen name="history" component={TrackTripsScreen} />
       </Tab.Navigator>
     </SafeAreaView>
   );

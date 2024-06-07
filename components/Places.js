@@ -5,16 +5,43 @@ import {
   TouchableOpacity,
   ScrollView,
   StyleSheet,
+  ActivityIndicator,
 } from "react-native";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
-import { theme } from "../theme";
+import { usePlaceModels } from "../hooks/places.api";
 
 const Places = () => {
-  const places = ["Place 1", "Place 2", "Place 3", "Place 4", "Place 5"];
+  //fetch places
+  const { data: places, error, isloading } = usePlaceModels();
 
+  // Render loading state
+  if (isloading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#3b82f6" />
+      </View>
+    );
+  }
+
+  // Render error state
+  if (error) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>Error: {error.message}</Text>
+      </View>
+    );
+  }
+  // Check if places is undefined
+  if (!places?.data?.length) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>No places found.</Text>
+      </View>
+    );
+  }
   return (
     <View style={styles.container}>
       <ScrollView
@@ -22,9 +49,9 @@ const Places = () => {
         contentContainerStyle={styles.scrollViewContent}
         showsHorizontalScrollIndicator={false}
       >
-        {places.map((place, index) => (
+        {places?.data?.map((place, index) => (
           <TouchableOpacity key={index} style={styles.placeButton}>
-            <Text style={styles.placeText}>{place}</Text>
+            <Text style={styles.placeText}>{place?.name}</Text>
           </TouchableOpacity>
         ))}
       </ScrollView>
@@ -35,18 +62,19 @@ const Places = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
-    marginTop: 16,
-    backgroundColor: "#f5f5f5",
+    padding: 10,
+    backgroundColor: "#D7DBDD",
+    borderRadius: 10,
   },
   scrollViewContent: {
-    paddingHorizontal: wp(3),
-    marginTop: hp(1),
+    // paddingHorizontal: wp(3),
+    // marginTop: hp(1),
+    alignItems: "center",
   },
   placeButton: {
     paddingHorizontal: wp(3),
     paddingVertical: hp(1.5),
-    backgroundColor: theme.secondary,
+    backgroundColor: "#fff",
     borderRadius: wp(2),
     marginRight: wp(3),
     shadowColor: "#000",
@@ -54,15 +82,30 @@ const styles = StyleSheet.create({
       width: 0,
       height: 2,
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+    justifyContent: "center",
+    alignItems: "center",
   },
   placeText: {
-    fontWeight: "bold",
+    fontWeight: "600",
     fontSize: wp(4),
-    color: "#1079e3",
-    textTransform: "capitalize",
+    color: "#333",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  errorText: {
+    fontSize: 18,
+    color: "red",
   },
 });
 

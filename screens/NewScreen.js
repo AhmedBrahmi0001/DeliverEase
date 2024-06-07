@@ -5,58 +5,75 @@ import {
   View,
   TouchableOpacity,
   ScrollView,
+  Button,
+  ActivityIndicator,
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useNavigation } from "@react-navigation/native";
+import { useGetOrderModel } from "../hooks/order.api";
 
-const NewScreen = () => {
-  const orderDetails = {
-    storeName: "Shoppers Drug Mart",
-    orderNumber: "SHO2086000123",
-    fromAddress: "366 Main St N, Brampton, Ontario, L6V 1P8",
-    toAddress: "14 Grantbrook St, North York, Ontario, M2R 2E7",
-    details: [
-      { label: "Order #", value: "SHO2086000123" },
-      { label: "Distance", value: "1.46 km" },
-      { label: "Customer name", value: "Rosalba Sanders" },
-      { label: "Unit #", value: "17" },
-      { label: "Buzzer #", value: "5" },
-      { label: "Customer needs to pay", value: "$85.00" },
-    ],
-    specialReq: "Fridge",
-    authorizedPersons: "Alex",
-  };
+const NewScreen = (props) => {
+  const navigation = useNavigation();
+  const { orderId } = props.route.params;
+  const { data: orders, error, isLoading } = useGetOrderModel(orderId);
 
   const renderDetailItem = ({ label, value }) => (
     <View style={styles.detailRow} key={label}>
-      <Text style={styles.label}>{label}</Text>
-      <Text style={styles.value}>{value}</Text>
+      <Text
+        style={[
+          styles.label,
+          label === "Description #" && styles.descriptionLabel,
+        ]}
+      >
+        {label}
+      </Text>
+      <Text
+        style={[
+          styles.value,
+          label === "Description #" && styles.descriptionValue,
+        ]}
+      >
+        {value}
+      </Text>
     </View>
   );
+  if (isLoading) {
+    return (
+      <SafeAreaView style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#007BFF" />
+      </SafeAreaView>
+    );
+  }
+  if (error) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>Error: {error.message}</Text>
+      </View>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.header}>
-          <Text style={styles.storeName}>{orderDetails.storeName}</Text>
-          <Text style={styles.orderNumber}>
-            Order #: {orderDetails.orderNumber}
-          </Text>
+          <Text style={styles.Ordername}>{orders?.name}</Text>
+          <Text style={styles.orderNumber}>Order #: {orders?.orderId}</Text>
         </View>
         <View style={styles.addressContainer}>
-          <Text style={styles.addressLabel}>Address Arrival</Text>
+          <Text style={styles.addressLabel}>Pickup_address</Text>
           <View style={styles.iconRow}>
             <FontAwesome name="map-marker" color="#007BFF" size={16} />
-            <Text style={styles.address}>{orderDetails.fromAddress}</Text>
+            <Text style={styles.address}>{orders?.pickup_address}</Text>
           </View>
-          <Text style={styles.addressLabel}>Address Return</Text>
+          <Text style={styles.addressLabel}>Deliver_address</Text>
           <View style={styles.iconRow}>
             <FontAwesome name="map-marker" color="#007BFF" size={16} />
-            <Text style={styles.address}>{orderDetails.toAddress}</Text>
+            <Text style={styles.address}>{orders?.deliver_address}</Text>
           </View>
         </View>
         <View style={styles.detailsContainer}>
-          {orderDetails.details.map(renderDetailItem)}
+          {order?.data?.map(renderDetailItem)}
           <View style={styles.detailRow}>
             <Text style={styles.label}>Customer Phone</Text>
             <TouchableOpacity>
@@ -66,17 +83,20 @@ const NewScreen = () => {
           <View style={styles.detailRow}>
             <Text style={styles.label}>Special Req</Text>
             <View style={styles.tag}>
-              <Text style={styles.tagText}>{orderDetails.specialReq}</Text>
+              <Text style={styles.tagText}>{orders.specialReq}</Text>
             </View>
           </View>
           <View style={styles.detailRow}>
-            <Text style={styles.label}>Authorized persons</Text>
+            <Text style={styles.label}>Etat</Text>
             <View style={styles.tag}>
-              <Text style={styles.tagText}>
-                {orderDetails.authorizedPersons}
-              </Text>
+              <Text style={styles.tagText}>{orders.Etat}</Text>
             </View>
           </View>
+          <Button
+            title="Validate"
+            onPress={() => navigation.navigate("Tracking")}
+            color="#007BFF"
+          />
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -97,7 +117,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 16,
   },
-  storeName: {
+  Ordername: {
     color: "#FFF",
     fontWeight: "bold",
     fontSize: 18,
@@ -136,14 +156,25 @@ const styles = StyleSheet.create({
   detailRow: {
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "flex-start",
     marginVertical: 4,
   },
   label: {
     fontWeight: "bold",
     marginTop: 8,
+    flex: 1,
+  },
+  descriptionLabel: {
+    flex: 1,
   },
   value: {
     color: "#555",
+    flex: 2,
+    textAlign: "right",
+  },
+  descriptionValue: {
+    flex: 3,
+    textAlign: "left",
   },
   callNow: {
     color: "#007BFF",

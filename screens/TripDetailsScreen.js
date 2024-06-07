@@ -26,7 +26,7 @@ const TripDetailsScreen = () => {
 
         <View style={styles.userInfo}>
           <Image
-            source={{ uri: "https://via.placeholder.com/50" }}
+            source={require("../assets/images/persona.jpg")}
             style={styles.userImage}
           />
           <View style={styles.userDetails}>
@@ -99,7 +99,7 @@ const TripDetailsScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#000",
+    backgroundColor: "white",
   },
   scrollContainer: {
     padding: 16,
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 20,
     fontWeight: "bold",
-    color: "#fff",
+    color: "black",
   },
   userInfo: {
     flexDirection: "row",
@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
   userName: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#fff",
+    color: "black",
   },
   rating: {
     flexDirection: "row",
@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
   },
   carType: {
     fontSize: 16,
-    color: "#fff",
+    color: "black",
   },
   tripStatus: {
     fontSize: 16,
@@ -158,11 +158,11 @@ const styles = StyleSheet.create({
   },
   addressText: {
     fontSize: 16,
-    color: "#fff",
+    color: "black",
     marginBottom: 5,
   },
   earningsContainer: {
-    backgroundColor: "#f0f0f0",
+    backgroundColor: "#707B7C",
     padding: 15,
     borderRadius: 10,
     marginBottom: 20,
@@ -170,12 +170,12 @@ const styles = StyleSheet.create({
   earningsTitle: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#000",
+    color: "white",
   },
   earningsAmount: {
     fontSize: 24,
     fontWeight: "bold",
-    color: "#000",
+    color: "white",
   },
   detailsContainer: {
     marginBottom: 20,
@@ -187,11 +187,11 @@ const styles = StyleSheet.create({
   },
   detailTitle: {
     fontSize: 16,
-    color: "#fff",
+    color: "black",
   },
   detailValue: {
     fontSize: 16,
-    color: "#fff",
+    color: "black",
   },
   button: {
     flexDirection: "row",

@@ -12,9 +12,10 @@ const EnableLocationScreen = () => {
       <View style={styles.content}>
         <Text style={styles.title}>Enable location</Text>
         <Image
-          source={{ uri: "https://via.placeholder.com/150" }} // Replace with your image URL
+          source={require("../assets/images/mylocation.png")} // Replace with your image URL
           style={styles.image}
         />
+
         <Text style={styles.description}>
           DeliveryEase app needs access to your location to localize the store
           and the customer addresses during order delivery
@@ -49,8 +50,8 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   image: {
-    width: 150,
-    height: 150,
+    width: 350,
+    height: 350,
     marginBottom: 20,
   },
   description: {

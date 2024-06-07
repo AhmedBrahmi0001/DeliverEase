@@ -26,6 +26,7 @@ import TripDetailsScreen from "./screens/TripDetailsScreen";
 import EnableLocationScreen from "./screens/EnableLocationScreen";
 import TrackTripsScreen from "./screens/TrackTripsScreen";
 import ReviewScreen from "./screens/ReviewScreen";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -33,116 +34,126 @@ const Tab = createBottomTabNavigator();
 LogBox.ignoreAllLogs(["Non-serializable value found in the navigation state"]);
 
 function App() {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: true,
+        refetchOnWindowFocus: false,
+      },
+    },
+  });
   return (
-    <PaperProvider>
-      <NavigationContainer>
-        <Stack.Navigator initialRouteName="Home">
-          <Stack.Screen
-            name="Home"
-            options={{ headerShown: false }}
-            component={HomeTabs}
-          />
+    <QueryClientProvider client={queryClient}>
+      <PaperProvider>
+        <NavigationContainer>
+          <Stack.Navigator initialRouteName="Home">
+            <Stack.Screen
+              name="Home"
+              options={{ headerShown: false }}
+              component={HomeTabs}
+            />
 
-          <Stack.Screen
-            name="Order"
-            options={{ headerShown: false }}
-            component={OrderScreen}
-          />
-          <Stack.Screen
-            name="Driver"
-            options={{ headerShown: false }}
-            component={DriverScreen}
-          />
-          <Stack.Screen
-            name="OrderList"
-            options={{ headerShown: false }}
-            component={OrderList}
-          />
+            <Stack.Screen
+              name="Order"
+              options={{ headerShown: false }}
+              component={OrderScreen}
+            />
+            <Stack.Screen
+              name="Driver"
+              options={{ headerShown: false }}
+              component={DriverScreen}
+            />
+            <Stack.Screen
+              name="OrderList"
+              options={{ headerShown: false }}
+              component={OrderList}
+            />
 
-          <Stack.Screen
-            name="Sign Up"
-            options={{ headerShown: false }}
-            component={SignUpScreen}
-          />
-          <Stack.Screen
-            name="Sign in"
-            options={{ headerShown: false }}
-            component={SignInScreen}
-          />
-          <Stack.Screen
-            name="Registre"
-            options={{ headerShown: false }}
-            component={RegistreScreen}
-          />
-          <Stack.Screen
-            name="OTP"
-            options={{ headerShown: false }}
-            component={OTPEntryScreen}
-          />
-          <Stack.Screen
-            name="Profile"
-            options={{ headerShown: false }}
-            component={ProfileScreen}
-          />
-          <Stack.Screen
-            name="Welcome"
-            options={{ headerShown: false }}
-            component={Welcome}
-          />
-          <Stack.Screen
-            name="Details"
-            options={{ headerShown: false }}
-            component={DetailsScreen}
-          />
+            <Stack.Screen
+              name="Sign Up"
+              options={{ headerShown: false }}
+              component={SignUpScreen}
+            />
+            <Stack.Screen
+              name="Sign in"
+              options={{ headerShown: false }}
+              component={SignInScreen}
+            />
+            <Stack.Screen
+              name="Registre"
+              options={{ headerShown: false }}
+              component={RegistreScreen}
+            />
+            <Stack.Screen
+              name="OTP"
+              options={{ headerShown: false }}
+              component={OTPEntryScreen}
+            />
+            <Stack.Screen
+              name="Profile"
+              options={{ headerShown: false }}
+              component={ProfileScreen}
+            />
+            <Stack.Screen
+              name="Welcome"
+              options={{ headerShown: false }}
+              component={Welcome}
+            />
+            <Stack.Screen
+              name="Details"
+              options={{ headerShown: false }}
+              component={DetailsScreen}
+            />
 
-          <Stack.Screen
-            name="Notification"
-            options={{ headerShown: false }}
-            component={NotificationsScreen}
-          />
-          <Stack.Screen
-            name="New"
-            options={{ headerShown: false }}
-            component={NewScreen}
-          />
-          <Stack.Screen
-            name="History"
-            options={{ headerShown: false }}
-            component={HistoryScreen}
-          />
-          <Stack.Screen
-            name="Tracking"
-            options={{ headerShown: false }}
-            component={TrackingScreen}
-          />
-          <Stack.Screen
-            name="Hello"
-            options={{ headerShown: false }}
-            component={HelloScreen}
-          />
-          <Stack.Screen
-            name="Trip"
-            options={{ headerShown: false }}
-            component={TripDetailsScreen}
-          />
-          <Stack.Screen
-            name="Enable"
-            options={{ headerShown: false }}
-            component={EnableLocationScreen}
-          />
-          <Stack.Screen
-            name="Track"
-            options={{ headerShown: false }}
-            component={TrackTripsScreen}
-          />
-          <Stack.Screen
-            name="Review"
-            options={{ headerShown: false }}
-            component={ReviewScreen}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </PaperProvider>
+            <Stack.Screen
+              name="Notification"
+              options={{ headerShown: false }}
+              component={NotificationsScreen}
+            />
+            <Stack.Screen
+              name="New"
+              options={{ headerShown: false }}
+              component={NewScreen}
+            />
+            <Stack.Screen
+              name="History"
+              options={{ headerShown: false }}
+              component={HistoryScreen}
+            />
+            <Stack.Screen
+              name="Tracking"
+              options={{ headerShown: false }}
+              component={TrackingScreen}
+            />
+            <Stack.Screen
+              name="Hello"
+              options={{ headerShown: false }}
+              component={HelloScreen}
+            />
+            <Stack.Screen
+              name="Trip"
+              options={{ headerShown: false }}
+              component={TripDetailsScreen}
+            />
+            <Stack.Screen
+              name="Enable"
+              options={{ headerShown: false }}
+              component={EnableLocationScreen}
+            />
+            <Stack.Screen
+              name="Track"
+              options={{ headerShown: false }}
+              component={TrackTripsScreen}
+            />
+            <Stack.Screen
+              name="Review"
+              options={{ headerShown: false }}
+              component={ReviewScreen}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </PaperProvider>
+    </QueryClientProvider>
   );
 }
 
@@ -183,7 +194,7 @@ function HomeTabs() {
       />
       <Tab.Screen
         name="OrderScreen"
-        component={DetailsScreen}
+        component={NewScreen}
         options={{
           title: "Orders",
           // tabBarInactiveTintColor: "white",

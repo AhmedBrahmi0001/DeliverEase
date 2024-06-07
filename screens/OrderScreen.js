@@ -9,16 +9,17 @@ import {
 import { TextInput, Button } from "react-native-paper";
 import { FontAwesome } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-
+import { useCreateOrderModel } from "../hooks/order.api";
 export default function OrderScreen({ navigation }) {
   const [name, setName] = useState("");
-  const [date, setDate] = useState("");
-  const [addressArrival, setAddressArrival] = useState("");
-  const [addressReturn, setAddressReturn] = useState("");
+  const [delivered_date, setDate] = useState("");
+  const [pickup_address, setpickup_address] = useState("");
+  const [deliver_address, setdeliver_address] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [descriptionInputs, setDescriptionInputs] = useState([""]);
   const [placeholderText, setPlaceholderText] = useState("MM/DD/YYYY");
+
+  const { mutate: createOrder } = useCreateOrderModel();
 
   const handleIncrement = () => {
     setQuantity(quantity + 1);
@@ -42,22 +43,21 @@ export default function OrderScreen({ navigation }) {
   const handleOrder = async () => {
     const order = {
       name,
-      date,
-      addressArrival,
-      addressReturn,
+      delivered_date,
+      pickup_address,
+      deliver_address,
       quantity,
       descriptionInputs,
     };
-
-    try {
-      const storedOrders = await AsyncStorage.getItem("orders");
-      let orders = storedOrders ? JSON.parse(storedOrders) : [];
-      orders.push(order);
-      await AsyncStorage.setItem("orders", JSON.stringify(orders));
-      navigation.navigate("OrderList");
-    } catch (error) {
-      console.error("Error storing order:", error);
-    }
+    createOrder(order, {
+      onSuccess: (data) => {
+        console.log("Order successful:", data);
+        navigation.navigate("OrderList");
+      },
+      onError: (error) => {
+        console.error("ErrorSubmitting order:", error);
+      },
+    });
   };
 
   return (
@@ -75,8 +75,8 @@ export default function OrderScreen({ navigation }) {
               style={styles.input}
             />
             <TextInput
-              label="Date"
-              value={date}
+              label="Delivered_date"
+              value={delivered_date}
               onChangeText={(text) => setDate(text)}
               mode="outlined"
               left={<FontAwesome name="calendar" size={24} color="black" />}
@@ -85,17 +85,17 @@ export default function OrderScreen({ navigation }) {
               onFocus={() => setPlaceholderText("MM/DD/YYYY")} // Change placeholder text on focus
             />
             <TextInput
-              label="Address Arrival"
-              value={addressArrival}
-              onChangeText={(text) => setAddressArrival(text)}
+              label="Pickup_address"
+              value={pickup_address}
+              onChangeText={(text) => setpickup_address(text)}
               mode="outlined"
               left={<FontAwesome name="map-marker" size={24} color="black" />}
               style={styles.input}
             />
             <TextInput
-              label="Address Return"
-              value={addressReturn}
-              onChangeText={(text) => setAddressReturn(text)}
+              label="Deliver_address"
+              value={deliver_address}
+              onChangeText={(text) => setdeliver_address(text)}
               mode="outlined"
               left={<FontAwesome name="map-marker" size={24} color="black" />}
               style={styles.input}

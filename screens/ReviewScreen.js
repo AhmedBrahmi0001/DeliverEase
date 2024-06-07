@@ -16,7 +16,7 @@ const ReviewScreen = () => {
       </View>
       <View style={styles.content}>
         <Image
-          source={{ uri: "https://via.placeholder.com/100" }} // Replace with actual rider image URL
+          source={require("../assets/images/persona.jpg")} // Replace with your image URL
           style={styles.image}
         />
         <Text style={styles.prompt}>How was your rider</Text>

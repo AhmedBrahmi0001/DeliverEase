@@ -48,7 +48,8 @@ const TrackTripsScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Track your trips</Text>
+      {/*
+      <Text style={styles.title}>Track your trips</Text>*/}
       <View style={styles.tabsContainer}>
         <TouchableOpacity
           style={[styles.tab, activeTab === "Current" && styles.activeTab]}
@@ -94,7 +95,7 @@ const TrackTripsScreen = () => {
             </View>
             <View style={styles.tripFooter}>
               <Image
-                source={{ uri: "https://via.placeholder.com/50" }} // Replace with actual car image
+                source={require("../assets/images/welcome.png")} // Replace with actual car image
                 style={styles.carImage}
               />
               <Text style={styles.carType}>{trip.carType}</Text>
@@ -113,20 +114,14 @@ const TrackTripsScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "black",
+    backgroundColor: "#BDC3C7",
     paddingHorizontal: 16,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "white",
-    marginTop: 16,
-    textAlign: "center",
-  },
+
   tabsContainer: {
     flexDirection: "row",
     justifyContent: "center",
-    marginTop: 16,
+    marginTop: 1,
     marginBottom: 16,
   },
   tab: {
@@ -134,12 +129,13 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 20,
     alignItems: "center",
-  },
-  activeTab: {
     backgroundColor: "white",
   },
+  activeTab: {
+    backgroundColor: "#1e90ff",
+  },
   tabText: {
-    color: "white",
+    color: "black",
     fontWeight: "bold",
   },
   activeTabText: {
@@ -187,9 +183,10 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   carImage: {
-    width: 50,
-    height: 30,
+    width: 70,
+    height: 60,
     resizeMode: "contain",
+    borderRadius: 10,
   },
   carType: {
     color: "black",
