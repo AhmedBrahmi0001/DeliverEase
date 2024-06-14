@@ -24,8 +24,7 @@ const useGetOrderModel = (orderId) =>
   });
 
 const createOrderModel = async (values) => {
-  const response = await axiosClient;
-  axiosClient.post("orders", values);
+  const response = await axiosClient.post("orders", values);
   return response.data;
 };
 

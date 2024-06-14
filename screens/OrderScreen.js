@@ -10,16 +10,26 @@ import { TextInput, Button } from "react-native-paper";
 import { FontAwesome } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useCreateOrderModel } from "../hooks/order.api";
-export default function OrderScreen({ navigation }) {
-  const [name, setName] = useState("");
+import { useNavigation, useRoute } from "@react-navigation/native";
+
+export default function OrderScreen() {
+  const route = useRoute();
+  const navigation = useNavigation();
   const [delivered_date, setDate] = useState("");
   const [pickup_address, setpickup_address] = useState("");
   const [deliver_address, setdeliver_address] = useState("");
   const [quantity, setQuantity] = useState(1);
-  const [descriptionInputs, setDescriptionInputs] = useState([""]);
+  const [description, setDescription] = useState([""]);
   const [placeholderText, setPlaceholderText] = useState("MM/DD/YYYY");
 
-  const { mutate: createOrder } = useCreateOrderModel();
+  const { driverId } = route.params || {};
+  const [latitude_pickup_address, setLatitude_pickup_address] = useState("1");
+  const [longitude_pickup_address, setLongitude_pickup_address] = useState("1");
+  const [latitude_deliver_address, setLatitude_deliver_address] = useState("1");
+  const [longitude_deliver_address, setLongitude_deliver_address] =
+    useState("1");
+
+  const createOrder = useCreateOrderModel();
 
   const handleIncrement = () => {
     setQuantity(quantity + 1);
@@ -32,32 +42,41 @@ export default function OrderScreen({ navigation }) {
   };
 
   const handleAddDescriptionInput = () => {
-    setDescriptionInputs([...descriptionInputs, ""]);
+    setDescription([...description, ""]);
   };
 
   const handleRemoveDescriptionInput = (index) => {
-    const updatedInputs = [...descriptionInputs];
+    const updatedInputs = [...description];
     updatedInputs.splice(index, 1);
-    setDescriptionInputs(updatedInputs);
+    setDescription(updatedInputs);
   };
   const handleOrder = async () => {
+    const descriptionString = description.join(",");
     const order = {
-      name,
-      delivered_date,
       pickup_address,
       deliver_address,
       quantity,
-      descriptionInputs,
+      description: descriptionString,
+      // s
+      latitude_pickup_address,
+      longitude_pickup_address,
+      latitude_deliver_address,
+      longitude_deliver_address,
+      client_id: 1,
+      driver_id: driverId,
     };
-    createOrder(order, {
-      onSuccess: (data) => {
-        console.log("Order successful:", data);
-        navigation.navigate("OrderList");
-      },
-      onError: (error) => {
-        console.error("ErrorSubmitting order:", error);
-      },
-    });
+
+    try {
+      await createOrder.mutateAsync(order);
+      navigation.navigate("OrderList");
+    } catch (error) {
+      if (error.response && error.response.data) {
+        const errorsObject = error.response.data;
+        console.error("errorsObject: ", errorsObject);
+      } else {
+        console.error("Error occurred without response data:", error);
+      }
+    }
   };
 
   return (
@@ -66,15 +85,7 @@ export default function OrderScreen({ navigation }) {
         <View style={styles.container}>
           <Text style={styles.title}>Order Form</Text>
           <View style={styles.inputContainer}>
-            <TextInput
-              label="Name"
-              value={name}
-              onChangeText={(text) => setName(text)}
-              mode="outlined"
-              left={<FontAwesome name="user" size={24} color="black" />}
-              style={styles.input}
-            />
-            <TextInput
+            {/* <TextInput
               label="Delivered_date"
               value={delivered_date}
               onChangeText={(text) => setDate(text)}
@@ -83,7 +94,7 @@ export default function OrderScreen({ navigation }) {
               style={styles.input}
               placeholder={placeholderText} // Dynamically set placeholder text
               onFocus={() => setPlaceholderText("MM/DD/YYYY")} // Change placeholder text on focus
-            />
+            /> */}
             <TextInput
               label="Pickup_address"
               value={pickup_address}
@@ -115,15 +126,15 @@ export default function OrderScreen({ navigation }) {
                 <FontAwesome name="plus" size={24} color="black" />
               </TouchableOpacity>
             </View>
-            {descriptionInputs.map((input, index) => (
+            {description.map((input, index) => (
               <View key={index} style={styles.descriptionInputContainer}>
                 <TextInput
                   label={`Description ${index + 1}`}
                   value={input}
                   onChangeText={(text) => {
-                    const updatedInputs = [...descriptionInputs];
+                    const updatedInputs = [...description];
                     updatedInputs[index] = text;
-                    setDescriptionInputs(updatedInputs);
+                    setDescription(updatedInputs);
                   }}
                   mode="outlined"
                   multiline={true}

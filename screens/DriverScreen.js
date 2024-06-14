@@ -17,6 +17,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useNavigation } from "@react-navigation/native";
 import { useGetDriverModel } from "../hooks/driver.api";
+import { useGetPlaceModel } from "../hooks/places.api";
+import { useEvaluationModels } from "../hooks/evaluation.api";
 
 const DriverScreen = (props) => {
   const navigation = useNavigation();
@@ -24,8 +26,16 @@ const DriverScreen = (props) => {
   const { driverId } = props.route.params;
   const { data: drivers, error, isLoading } = useGetDriverModel(driverId);
 
+  // Fetch place data using the place_id from drivers
+  const placeId = drivers?.place_id;
+  const {
+    data: places,
+    error: placeError,
+    isLoading: placeLoading,
+  } = useGetPlaceModel(placeId);
+
   // Render loading state
-  if (isLoading) {
+  if (isLoading || placeLoading) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#3b82f6" />
@@ -34,10 +44,12 @@ const DriverScreen = (props) => {
   }
 
   // Render error state
-  if (error) {
+  if (error || placeError) {
     return (
       <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>Error: {error.message}</Text>
+        <Text style={styles.errorText}>
+          Error: {error?.message || placeError?.message}
+        </Text>
       </View>
     );
   }
@@ -102,7 +114,7 @@ const DriverScreen = (props) => {
               color="#fde047"
             />
             <Text style={{ fontSize: wp(5.8) }} className="text-neutral-700">
-              {drivers.rating}
+              {drivers?.rating}
             </Text>
           </View>
           <Text
@@ -114,7 +126,7 @@ const DriverScreen = (props) => {
           <View className="flex-row space-x-2">
             <FontAwesome name="map-marker" size={wp(7.5)} color="#3b82f6" />
             <Text style={{ fontSize: wp(5.8) }} className="text-neutral-700">
-              {drivers.place}
+              {places?.name} {/* Display place name */}
             </Text>
           </View>
           {/* Order button */}
@@ -126,7 +138,7 @@ const DriverScreen = (props) => {
               alignItems: "center",
               marginTop: hp(2),
             }}
-            onPress={() => navigation.navigate("Order")}
+            onPress={() => navigation.navigate("Order", { driverId })}
           >
             <Text
               style={{
@@ -136,6 +148,26 @@ const DriverScreen = (props) => {
               }}
             >
               Create
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{
+              backgroundColor: "#3b82f6",
+              borderRadius: wp(8),
+              paddingVertical: hp(1.5),
+              alignItems: "center",
+              marginTop: hp(2),
+            }}
+            onPress={() => navigation.navigate("Review", { driverId })}
+          >
+            <Text
+              style={{
+                fontSize: wp(5),
+                fontWeight: "bold",
+                color: "white",
+              }}
+            >
+              Review
             </Text>
           </TouchableOpacity>
         </ScrollView>

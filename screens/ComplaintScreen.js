@@ -13,34 +13,40 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { FontAwesome } from "@expo/vector-icons";
-import { useCreateEvaluationModel } from "../hooks/evaluation.api"; // Import the hook
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { useCreateComplaintModel } from "../hooks/complaint.api"; // Import the hook
+import { useNavigation } from "@react-navigation/native";
 
-const ReviewScreen = () => {
-  const [rating, setRating] = useState(4);
-  const [comment, setComment] = useState("");
+const ComplaintScreen = () => {
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const navigation = useNavigation();
-  const route = useRoute();
-  const { driverId } = route.params || {}; // Extracting driverId with a fallback to an empty object
 
-  const createEvaluation = useCreateEvaluationModel();
+  const createComplaint = useCreateComplaintModel();
 
-  const handleSubmitReview = async () => {
-    if (!driverId) {
-      Alert.alert("Error", "Driver ID is missing.");
+  const handleSubmitComplaint = async () => {
+    if (!title || !description) {
+      Alert.alert("Error", "Title and Description are required.");
       return;
     }
 
-    const reviewData = {
-      driver_id: driverId,
-      client_id: 31,
-      comment,
-      rating,
+    const complaintData = {
+      title,
+      description,
+      etat: "pending",
     };
 
+    // createComplaint(complaintData, {
+    //   onSuccess: (data) => {
+    //     console.log("Complaint successful:", data);
+    //     navigation.goBack();
+    //   },
+    //   onError: (error) => {
+    //     console.error("ErrorSubmitting complaint:", error);
+    //   },
+    // });
     try {
-      await createEvaluation.mutateAsync(reviewData);
-      navigation.goBack();
+      await createComplaint.mutateAsync(complaintData);
+      navigation.navigate("Home");
     } catch (error) {
       if (error.response && error.response.data) {
         const errorsObject = error.response.data;
@@ -63,46 +69,33 @@ const ReviewScreen = () => {
             <TouchableOpacity onPress={() => navigation.goBack()}>
               <FontAwesome name="arrow-left" size={24} color="black" />
             </TouchableOpacity>
-            <Text style={styles.title}>Leave your review</Text>
+            <Text style={styles.title}>Leave your Complaint</Text>
           </View>
           <View style={styles.content}>
             <Image
               source={require("../assets/images/persona.jpg")} // Replace with your image URL
               style={styles.image}
             />
-            <Text style={styles.prompt}>How was your rider?</Text>
-            <View style={styles.stars}>
-              {[1, 2, 3, 4, 5].map((star) => (
-                <TouchableOpacity key={star} onPress={() => setRating(star)}>
-                  <FontAwesome
-                    name={star <= rating ? "star" : "star-o"}
-                    size={32}
-                    color="#F4D03F"
-                    style={styles.star}
-                  />
-                </TouchableOpacity>
-              ))}
-            </View>
             <TextInput
               style={styles.input}
-              placeholder="Write a comment..."
-              value={comment}
-              onChangeText={setComment}
+              placeholder="Title"
+              value={title}
+              onChangeText={setTitle}
+            />
+            <TextInput
+              style={[styles.input, { height: 100 }]}
+              placeholder="Description"
+              value={description}
+              onChangeText={setDescription}
               multiline
             />
           </View>
           <View style={styles.footer}>
             <TouchableOpacity
-              style={styles.reviewLaterButton}
-              onPress={() => navigation.goBack()}
+              style={styles.submitButton}
+              onPress={handleSubmitComplaint}
             >
-              <Text style={styles.reviewLaterText}>Review later</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.doneButton}
-              onPress={handleSubmitReview}
-            >
-              <Text style={styles.doneButtonText}>Done</Text>
+              <Text style={styles.submitButtonText}>Submit</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -141,21 +134,8 @@ const styles = StyleSheet.create({
     height: 100,
     borderRadius: 50,
   },
-  prompt: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginVertical: 16,
-  },
-  stars: {
-    flexDirection: "row",
-    marginVertical: 16,
-  },
-  star: {
-    marginHorizontal: 4,
-  },
   input: {
     width: "100%",
-    height: 100,
     borderColor: "#ccc",
     borderWidth: 1,
     borderRadius: 8,
@@ -167,25 +147,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 32,
   },
-  reviewLaterButton: {
-    marginVertical: 10,
-  },
-  reviewLaterText: {
-    color: "#1e90ff",
-    fontSize: 18,
-  },
-  doneButton: {
+  submitButton: {
     backgroundColor: "black",
     borderRadius: 8,
     paddingVertical: 14,
     paddingHorizontal: 60,
     marginTop: 10,
   },
-  doneButtonText: {
+  submitButtonText: {
     color: "white",
     fontSize: 18,
     fontWeight: "bold",
   },
 });
 
-export default ReviewScreen;
+export default ComplaintScreen;

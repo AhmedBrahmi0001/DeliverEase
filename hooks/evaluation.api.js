@@ -31,7 +31,7 @@ const useGetEvaluationModel = (evaluationId) =>
 
 const createEvaluationModel = async (values) => {
   const response = await axiosClient.post("evaluations", values);
-  return response;
+  return response.data;
 };
 
 const useCreateEvaluationModel = () => {

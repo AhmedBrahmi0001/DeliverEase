@@ -27,6 +27,7 @@ import EnableLocationScreen from "./screens/EnableLocationScreen";
 import TrackTripsScreen from "./screens/TrackTripsScreen";
 import ReviewScreen from "./screens/ReviewScreen";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import ComplaintScreen from "./screens/ComplaintScreen";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -150,6 +151,11 @@ function App() {
               options={{ headerShown: false }}
               component={ReviewScreen}
             />
+            <Stack.Screen
+              name="Complaint"
+              options={{ headerShown: false }}
+              component={ComplaintScreen}
+            />
           </Stack.Navigator>
         </NavigationContainer>
       </PaperProvider>
@@ -193,10 +199,10 @@ function HomeTabs() {
         }}
       />
       <Tab.Screen
-        name="OrderScreen"
+        name="DetailsOrder"
         component={NewScreen}
         options={{
-          title: "Orders",
+          title: "Details",
           // tabBarInactiveTintColor: "white",
           // tabBarActiveTintColor: "white",
           tabBarIcon: ({ color }) => (
@@ -206,7 +212,7 @@ function HomeTabs() {
       />
       <Tab.Screen
         name="chats"
-        component={NotificationsScreen}
+        component={ReviewScreen}
         options={{
           title: "Chats",
           // tabBarInactiveTintColor: "white",
@@ -216,7 +222,7 @@ function HomeTabs() {
       />
       <Tab.Screen
         name="Settings"
-        component={SettingsScreen}
+        component={ComplaintScreen}
         options={{
           title: "Settings",
           // tabBarInactiveTintColor: "white",

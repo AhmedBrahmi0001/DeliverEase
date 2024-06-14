@@ -1,4 +1,6 @@
-import React from "react";
+// NewScreen.js
+
+import React, { useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -15,8 +17,14 @@ import { useGetOrderModel } from "../hooks/order.api";
 
 const NewScreen = (props) => {
   const navigation = useNavigation();
-  const { orderId } = props.route.params;
-  const { data: orders, error, isLoading } = useGetOrderModel(orderId);
+  const { orderId } = props.route.params || {};
+  const { data: order, error, isLoading } = useGetOrderModel(orderId);
+  useEffect(() => {
+    // Auto-navigation logic to the "DetailsOrder" screen
+    if (order) {
+      navigation.navigate("DetailsOrder", { orderId: order.id });
+    }
+  }, [order, navigation]); // This effect runs when 'order' or 'navigation' changes
 
   const renderDetailItem = ({ label, value }) => (
     <View style={styles.detailRow} key={label}>
@@ -38,6 +46,7 @@ const NewScreen = (props) => {
       </Text>
     </View>
   );
+
   if (isLoading) {
     return (
       <SafeAreaView style={styles.loadingContainer}>
@@ -45,6 +54,7 @@ const NewScreen = (props) => {
       </SafeAreaView>
     );
   }
+
   if (error) {
     return (
       <View style={styles.errorContainer}>
@@ -57,23 +67,48 @@ const NewScreen = (props) => {
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.header}>
-          <Text style={styles.Ordername}>{orders?.name}</Text>
-          <Text style={styles.orderNumber}>Order #: {orders?.orderId}</Text>
+          <Text style={styles.orderName}>{order?.name}</Text>
+          <Text style={styles.orderNumber}>Order #: {order?.id}</Text>
         </View>
         <View style={styles.addressContainer}>
-          <Text style={styles.addressLabel}>Pickup_address</Text>
+          <Text style={styles.addressLabel}>Pickup Address</Text>
           <View style={styles.iconRow}>
             <FontAwesome name="map-marker" color="#007BFF" size={16} />
-            <Text style={styles.address}>{orders?.pickup_address}</Text>
+            <Text style={styles.address}>{order?.pickup_address}</Text>
           </View>
-          <Text style={styles.addressLabel}>Deliver_address</Text>
+          <Text style={styles.addressLabel}>Deliver Address</Text>
           <View style={styles.iconRow}>
             <FontAwesome name="map-marker" color="#007BFF" size={16} />
-            <Text style={styles.address}>{orders?.deliver_address}</Text>
+            <Text style={styles.address}>{order?.deliver_address}</Text>
+          </View>
+          <Text style={styles.addressLabel}>Description</Text>
+          <View style={styles.iconRow}>
+            <FontAwesome name="" color="#007BFF" size={16} />
+            <Text style={styles.address}>{order?.description}</Text>
+          </View>
+          <Text style={styles.addressLabel}>delivered_date</Text>
+          <View style={styles.iconRow}>
+            <FontAwesome name="calendar" color="#007BFF" size={16} />
+            <Text style={styles.address}>{order?.delivered_date}</Text>
+          </View>
+          <Text style={styles.addressLabel}>quantity</Text>
+          <View style={styles.iconRow}>
+            <FontAwesome name="stack-overflow" color="#007BFF" size={16} />
+            <Text style={styles.address}>{order?.quantity} units</Text>
           </View>
         </View>
         <View style={styles.detailsContainer}>
-          {order?.data?.map(renderDetailItem)}
+          {Object.keys(order?.data || {}).map((key) =>
+            renderDetailItem({ label: key, value: order.data[key] })
+          )}
+          <View style={styles.detailRow}>
+            <Text style={styles.label}>Client Name</Text>
+            <Text style={styles.value}>{order?.client?.user?.name}</Text>
+          </View>
+          <View style={styles.detailRow}>
+            <Text style={styles.label}>Driver Name</Text>
+            <Text style={styles.value}>{order?.driver?.name}</Text>
+          </View>
           <View style={styles.detailRow}>
             <Text style={styles.label}>Customer Phone</Text>
             <TouchableOpacity>
@@ -81,15 +116,25 @@ const NewScreen = (props) => {
             </TouchableOpacity>
           </View>
           <View style={styles.detailRow}>
-            <Text style={styles.label}>Special Req</Text>
-            <View style={styles.tag}>
-              <Text style={styles.tagText}>{orders.specialReq}</Text>
-            </View>
+            <Text style={styles.label}>Details</Text>
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate("DetailsOrder", { orderId: order.id })
+              }
+            >
+              <Text style={styles.callNow}>Details</Text>
+            </TouchableOpacity>
           </View>
           <View style={styles.detailRow}>
             <Text style={styles.label}>Etat</Text>
             <View style={styles.tag}>
-              <Text style={styles.tagText}>{orders.Etat}</Text>
+              <Text style={styles.tagText}>{order?.etat}</Text>
+            </View>
+          </View>
+          <View style={styles.detailRow}>
+            <Text style={styles.label}>Price</Text>
+            <View style={styles.tag}>
+              <Text style={styles.tagText}>{order?.price} TN</Text>
             </View>
           </View>
           <Button
@@ -117,7 +162,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 16,
   },
-  Ordername: {
+  orderName: {
     color: "#FFF",
     fontWeight: "bold",
     fontSize: 18,
@@ -191,6 +236,19 @@ const styles = StyleSheet.create({
   },
   tagText: {
     color: "#FFF",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  errorText: {
+    color: "red",
   },
 });
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -14,11 +14,11 @@ import {
 import { usePlaceModels } from "../hooks/places.api";
 
 const Places = () => {
-  //fetch places
-  const { data: places, error, isloading } = usePlaceModels();
+  const { data: places, error, isLoading } = usePlaceModels();
+  const [selectedPlace, setSelectedPlace] = useState(null);
 
   // Render loading state
-  if (isloading) {
+  if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#3b82f6" />
@@ -34,6 +34,7 @@ const Places = () => {
       </View>
     );
   }
+
   // Check if places is undefined
   if (!places?.data?.length) {
     return (
@@ -42,6 +43,7 @@ const Places = () => {
       </View>
     );
   }
+
   return (
     <View style={styles.container}>
       <ScrollView
@@ -50,8 +52,22 @@ const Places = () => {
         showsHorizontalScrollIndicator={false}
       >
         {places?.data?.map((place, index) => (
-          <TouchableOpacity key={index} style={styles.placeButton}>
-            <Text style={styles.placeText}>{place?.name}</Text>
+          <TouchableOpacity
+            key={index}
+            style={[
+              styles.placeButton,
+              selectedPlace === place.id && styles.selectedPlaceButton,
+            ]}
+            onPress={() => setSelectedPlace(place.id)}
+          >
+            <Text
+              style={[
+                styles.placeText,
+                selectedPlace === place.id && styles.selectedPlaceText,
+              ]}
+            >
+              {place?.name}
+            </Text>
           </TouchableOpacity>
         ))}
       </ScrollView>
@@ -67,14 +83,12 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   scrollViewContent: {
-    // paddingHorizontal: wp(3),
-    // marginTop: hp(1),
     alignItems: "center",
   },
   placeButton: {
     paddingHorizontal: wp(3),
     paddingVertical: hp(1.5),
-    backgroundColor: "#fff",
+    backgroundColor: "#F5F5F5",
     borderRadius: wp(2),
     marginRight: wp(3),
     shadowColor: "#000",
@@ -88,10 +102,16 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  selectedPlaceButton: {
+    backgroundColor: "#007BFF",
+  },
   placeText: {
     fontWeight: "600",
     fontSize: wp(4),
     color: "#333",
+  },
+  selectedPlaceText: {
+    color: "#FFFFFF",
   },
   loadingContainer: {
     flex: 1,
