@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -6,50 +6,74 @@ import {
   TouchableOpacity,
   ScrollView,
   Image,
+  ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { FontAwesome } from "@expo/vector-icons";
-
-const tripsData = [
-  {
-    id: 1,
-    date: "02-05-2023",
-    time: "02:39 PM",
-    amount: "£1.92",
-    from: "3 Clive Rd, Clive Road, England, United Kingdom-DA11 0AU",
-    to: "1 Trafalgar Rd, Trafalgar Road, England, United Kingdom-DA11 0QA",
-    carType: "Executive",
-    status: "Completed",
-  },
-  {
-    id: 2,
-    date: "02-05-2023",
-    time: "02:34 PM",
-    amount: "£0.90",
-    from: "3 Clive Rd, Clive Road, England, United Kingdom-DA11 0AU",
-    to: "91 Wrotham Rd, Wrotham Road, England, United Kingdom-DA11 0QB",
-    carType: "Executive",
-    status: "Completed",
-  },
-  {
-    id: 3,
-    date: "28-04-2023",
-    time: "07:27 AM",
-    amount: "£0.89",
-    from: "3 Clive Rd, Clive Road, England, United Kingdom-DA11 0AU",
-    to: "1 Trafalgar Rd, Trafalgar Road, England, United Kingdom-DA11 0QA",
-    carType: "Executive",
-    status: "Completed",
-  },
-];
+import { useNavigation } from "@react-navigation/native";
+import { useOrderModels } from "../hooks/order.api";
+import moment from "moment";
 
 const TrackTripsScreen = () => {
+  const navigation = useNavigation();
+  const { data: orders, error, isLoading } = useOrderModels();
   const [activeTab, setActiveTab] = useState("Past");
+  const [filteredOrders, setFilteredOrders] = useState([]);
+
+  // Function to filter orders based on created_at date
+  useEffect(() => {
+    if (orders?.data?.length) {
+      const currentDate = moment();
+      const todayDateString = currentDate.format("YYYY-MM-DD");
+
+      const filteredOrders = orders.data.filter((order) => {
+        const orderDate = moment(order.created_at).startOf("day");
+
+        switch (activeTab) {
+          case "Current":
+            return orderDate.isSame(currentDate, "day");
+
+          case "Past":
+            return orderDate.isBefore(currentDate, "day");
+
+          default:
+            return true; // Default case, return all orders
+        }
+      });
+
+      setFilteredOrders(filteredOrders);
+    }
+  }, [activeTab, orders]);
+
+  // Render loading state
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#3b82f6" />
+      </View>
+    );
+  }
+
+  // Render error state
+  if (error) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>Error: {error.message}</Text>
+      </View>
+    );
+  }
+
+  // Check if places is undefined
+  if (!orders?.data?.length) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>No orders found.</Text>
+      </View>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
-      {/*
-      <Text style={styles.title}>Track your trips</Text>*/}
       <View style={styles.tabsContainer}>
         <TouchableOpacity
           style={[styles.tab, activeTab === "Current" && styles.activeTab]}
@@ -79,31 +103,51 @@ const TrackTripsScreen = () => {
         </TouchableOpacity>
       </View>
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
-        {tripsData.map((trip) => (
-          <View key={trip.id} style={styles.tripCard}>
+        {filteredOrders.map((order) => (
+          <View key={order?.id} style={styles.tripCard}>
             <View style={styles.tripHeader}>
               <FontAwesome name="clock-o" size={16} color="gray" />
-              <Text style={styles.tripDate}>{`${trip.date}/${trip.time}`}</Text>
+              <Text style={styles.tripDate}>
+                {`${order.delivered_date}//${order?.code}`}
+              </Text>
               <View style={styles.tripAmountContainer}>
                 <FontAwesome name="money" size={16} color="gray" />
-                <Text style={styles.tripAmount}>{trip.amount}</Text>
+                <Text style={styles.tripAmount}>{order?.price}</Text>
               </View>
             </View>
             <View style={styles.tripDetails}>
-              <Text style={styles.tripAddress}>{trip.from}</Text>
-              <Text style={styles.tripAddress}>{trip.to}</Text>
+              <Text style={styles.texttripAddress}>pickup_address</Text>
+              <Text style={styles.tripAddress}>{order?.pickup_address}</Text>
+              <Text style={styles.texttripAddress}>deliver_address</Text>
+              <Text style={styles.tripAddress}>{order?.deliver_address}</Text>
+              <View style={styles.quantityRow}>
+                <Text style={styles.texttripAddress}>Quantity :</Text>
+                <Text style={styles.textquantity}>
+                  {" "}
+                  {order?.quantity} units
+                </Text>
+              </View>
             </View>
+
             <View style={styles.tripFooter}>
-              <Image
-                source={require("../assets/images/welcome.png")} // Replace with actual car image
-                style={styles.carImage}
-              />
-              <Text style={styles.carType}>{trip.carType}</Text>
-              <Text style={styles.tripStatus}>{trip.status}</Text>
+              {/* 
+              // Render driver information if needed
+              {order.driver?.image && (
+                <Image
+                  source={{ uri: order.driver.image }}
+                  style={styles.driverImage}
+                />
+              )}
+                <Text style={styles.drivername}>{order.driver?.name}</Text>
+              
+              */}
+
+              <Text style={styles.texttripAddress}>Etat : </Text>
+              <Text style={styles.tripStatus}> {order?.etat}</Text>
             </View>
-            <TouchableOpacity style={styles.detailsButton}>
+            {/*<View style={styles.detailsButton}>
               <Text style={styles.detailsButtonText}>View details</Text>
-            </TouchableOpacity>
+            </View>*/}
           </View>
         ))}
       </ScrollView>
@@ -115,9 +159,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#BDC3C7",
-    paddingHorizontal: 16,
+    paddingHorizontal: 14,
   },
-
   tabsContainer: {
     flexDirection: "row",
     justifyContent: "center",
@@ -172,6 +215,15 @@ const styles = StyleSheet.create({
   tripDetails: {
     marginVertical: 16,
   },
+  texttripAddress: {
+    color: "gray",
+    fontSize: 14,
+    marginBottom: 4,
+  },
+  quantityRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
   tripAddress: {
     color: "black",
     fontSize: 16,
@@ -180,7 +232,6 @@ const styles = StyleSheet.create({
   tripFooter: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
   },
   carImage: {
     width: 70,
@@ -188,9 +239,14 @@ const styles = StyleSheet.create({
     resizeMode: "contain",
     borderRadius: 10,
   },
-  carType: {
+  textquantity: {
     color: "black",
-    fontSize: 16,
+    fontSize: 14,
+    fontWeight: "bold",
+  },
+  drivername: {
+    color: "black",
+    fontSize: 14,
     fontWeight: "bold",
   },
   tripStatus: {
@@ -206,6 +262,20 @@ const styles = StyleSheet.create({
     color: "#1e90ff",
     fontSize: 16,
     fontWeight: "bold",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  errorText: {
+    fontSize: 18,
+    color: "red",
   },
 });
 

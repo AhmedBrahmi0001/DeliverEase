@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { Icon } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
+
 import {
   useNotificationModels,
   useMarkNotificationAsRead,
@@ -25,6 +26,7 @@ const NotificationsScreen = () => {
   } = useNotificationModels();
   const markAsReadMutation = useMarkNotificationAsRead();
   const markAllAsReadMutation = useMarkAllNotificationAsRead();
+
   //mark as read for one notification
   const handleMarkAsRead = async (notificationId) => {
     try {

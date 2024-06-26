@@ -1,6 +1,6 @@
 // NewScreen.js
 
-import React, { useEffect } from "react";
+import React from "react";
 import {
   StyleSheet,
   Text,
@@ -19,12 +19,6 @@ const NewScreen = (props) => {
   const navigation = useNavigation();
   const { orderId } = props.route.params || {};
   const { data: order, error, isLoading } = useGetOrderModel(orderId);
-  useEffect(() => {
-    // Auto-navigation logic to the "DetailsOrder" screen
-    if (order) {
-      navigation.navigate("DetailsOrder", { orderId: order.id });
-    }
-  }, [order, navigation]); // This effect runs when 'order' or 'navigation' changes
 
   const renderDetailItem = ({ label, value }) => (
     <View style={styles.detailRow} key={label}>

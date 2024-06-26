@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -7,7 +8,6 @@ import {
   ActivityIndicator,
   StyleSheet,
 } from "react-native";
-import React from "react";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -22,20 +22,47 @@ import { useEvaluationModels } from "../hooks/evaluation.api";
 
 const DriverScreen = (props) => {
   const navigation = useNavigation();
-  // Assuming driverId is passed through route params
   const { driverId } = props.route.params;
-  const { data: drivers, error, isLoading } = useGetDriverModel(driverId);
 
-  // Fetch place data using the place_id from drivers
-  const placeId = drivers?.place_id;
+  // Fetch driver data
+  const {
+    data: driver,
+    error: driverError,
+    isLoading: driverLoading,
+  } = useGetDriverModel(driverId);
+
+  // Fetch place data using place_id from driver
+  const placeId = driver?.place_id;
   const {
     data: places,
     error: placeError,
     isLoading: placeLoading,
   } = useGetPlaceModel(placeId);
 
-  // Render loading state
-  if (isLoading || placeLoading) {
+  // // Fetch evaluations data
+  // const {
+  //   data: evaluations,
+  //   error: evaluationError,
+  //   isLoading: evaluationLoading,
+  // } = useEvaluationModels(driverId);
+
+  // State to hold average rating
+  const [averageRating, setAverageRating] = useState(0);
+
+  // Calculate average rating when evaluations change
+  useEffect(() => {
+    if (driver?.evaluations && driver?.evaluations.length) {
+      const totalRating = driver?.evaluations.reduce(
+        (sum, evaluation) => sum + evaluation.rating,
+        0
+      );
+      const avgRating = totalRating / driver?.evaluations.length;
+      setAverageRating(avgRating);
+    }
+  }, [driver?.evaluations]);
+
+  // Handle loading state
+  if (driverLoading || placeLoading) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#3b82f6" />
@@ -43,19 +70,21 @@ const DriverScreen = (props) => {
     );
   }
 
-  // Render error state
-  if (error || placeError) {
+  // Handle error state
+  if (driverError || placeError) {
     return (
       <View style={styles.errorContainer}>
         <Text style={styles.errorText}>
-          Error: {error?.message || placeError?.message}
+          Error:{" "}
+          {driverError?.message ||
+            placeError?.message}
         </Text>
       </View>
     );
   }
 
-  // Render no drivers found state
-  if (!drivers) {
+  // Handle no driver found state
+  if (!driver) {
     return (
       <View style={styles.errorContainer}>
         <Text style={styles.errorText}>Driver not found.</Text>
@@ -64,88 +93,152 @@ const DriverScreen = (props) => {
   }
 
   return (
-    <View className="bg-white flex-1">
-      {/* Driver image */}
+    <View style={{ flex: 1, backgroundColor: "white" }}>
       <Image
-        source={{ uri: drivers?.image }}
+        source={{ uri: driver?.image }}
         style={{ width: wp(100), height: hp(55) }}
       />
-      <StatusBar style={"light"} />
-      {/* Back button */}
-      <SafeAreaView className="flex-row justify-between items-center w-full absolute">
+      <StatusBar style="light" />
+      <SafeAreaView
+        style={{
+          position: "absolute",
+          flexDirection: "row",
+          justifyContent: "space-between",
+          width: "100%",
+        }}
+      >
         <TouchableOpacity
           onPress={() => navigation.goBack()}
-          className="p-2 rounded-full ml-4"
-          style={{ backgroundColor: "rgba(255,255,255,0.5)" }}
+          style={{
+            padding: wp(3),
+            borderRadius: wp(10),
+            backgroundColor: "rgba(255, 255, 255, 0.5)",
+          }}
         >
           <FontAwesome
             name="chevron-left"
-            size={wp(7)}
+            size={wp(6)}
             strokewidth={4}
             color="#334155"
           />
         </TouchableOpacity>
       </SafeAreaView>
-      {/* Title, description & rating */}
       <View
-        style={{ borderTopLeftRadius: 40, borderTopRightRadius: 40 }}
-        className="px-5 flex-1 justify-between bg-white pt-8 -mt-14"
+        style={{
+          borderTopLeftRadius: 40,
+          borderTopRightRadius: 40,
+          backgroundColor: "white",
+          paddingHorizontal: wp(5),
+          paddingTop: hp(8),
+          marginTop: -hp(14),
+        }}
       >
-        <ScrollView showsVerticalScrollIndicator={false} className="space-y-5">
-          <View className="flex-row justify-between items-start">
-            <Text
-              style={{ fontSize: wp(7) }}
-              className="font-bold flex-1 text-neutral-700"
-            >
-              {drivers?.name}
-            </Text>
-            <Text
-              style={{ fontSize: wp(7), color: "#3b82f6" }}
-              className="font-semibold"
-            >
-              {drivers?.price}
-            </Text>
-          </View>
-          <View className="flex-row space-x-2 rounded-full">
-            <FontAwesome
-              style={{ backgroundColor: "rgba(255,255,255,0.5)" }}
-              name="star"
-              size={wp(7.5)}
-              color="#fde047"
-            />
-            <Text style={{ fontSize: wp(5.8) }} className="text-neutral-700">
-              {drivers?.rating}
-            </Text>
-          </View>
-          <Text
-            style={{ fontSize: wp(3.7) }}
-            className="font-semibold text-neutral-700 tracking-wide mb-2"
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          style={{ marginBottom: hp(10) }}
+        >
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "flex-start",
+            }}
           >
-            {drivers.description}
-          </Text>
-          <View className="flex-row space-x-2">
-            <FontAwesome name="map-marker" size={wp(7.5)} color="#3b82f6" />
-            <Text style={{ fontSize: wp(5.8) }} className="text-neutral-700">
-              {places?.name} {/* Display place name */}
+            <Text
+              style={{ fontSize: wp(6), fontWeight: "bold", color: "#334155" }}
+            >
+              {driver.name}
+            </Text>
+            {/*<Text
+              style={{ fontSize: wp(6), color: "#3b82f6", fontWeight: "bold" }}
+            >
+              {driver.price} TN
+            </Text*/}
+          </View>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              marginTop: hp(2),
+            }}
+          >
+            <FontAwesome
+              name="money"
+              size={wp(6)}
+              color="#22780f"
+              style={{
+                backgroundColor: "rgba(255, 255, 255, 0.5)",
+                borderRadius: wp(10),
+                padding: wp(3),
+              }}
+            />
+            <Text
+              style={{ fontSize: wp(5.8), marginLeft: wp(2), color: "#334155" }}
+            >
+              {driver.price} TN
             </Text>
           </View>
-          {/* Order button */}
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              marginTop: hp(1),
+            }}
+          >
+            <FontAwesome
+              name="star"
+              size={wp(6)}
+              color="#fde047"
+              style={{
+                backgroundColor: "rgba(255, 255, 255, 0.5)",
+                borderRadius: wp(10),
+                padding: wp(3),
+              }}
+            />
+            <Text
+              style={{ fontSize: wp(5.8), marginLeft: wp(2), color: "#334155" }}
+            >
+              {averageRating.toFixed(1)}
+            </Text>
+          </View>
+          {/*<Text style={{ fontSize: wp(4), color: "#334155", marginTop: hp(2) }}>
+            {driver.description}
+          </Text>*/}
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              marginTop: hp(2),
+            }}
+          >
+            <FontAwesome
+              name="map-marker"
+              size={wp(6)}
+              color="#3b82f6"
+              style={{
+                backgroundColor: "rgba(255, 255, 255, 0.5)",
+                borderRadius: wp(10),
+                padding: wp(3),
+              }}
+            />
+            <Text
+              style={{ fontSize: wp(5.8), marginLeft: wp(2), color: "#334155" }}
+            >
+              {places?.name}
+            </Text>
+          </View>
           <TouchableOpacity
             style={{
               backgroundColor: "#3b82f6",
               borderRadius: wp(8),
               paddingVertical: hp(1.5),
               alignItems: "center",
-              marginTop: hp(2),
+              marginTop: hp(10),
             }}
             onPress={() => navigation.navigate("Order", { driverId })}
           >
             <Text
-              style={{
-                fontSize: wp(5),
-                fontWeight: "bold",
-                color: "white",
-              }}
+              style={{ fontSize: wp(5), fontWeight: "bold", color: "white" }}
             >
               Create
             </Text>
@@ -161,11 +254,7 @@ const DriverScreen = (props) => {
             onPress={() => navigation.navigate("Review", { driverId })}
           >
             <Text
-              style={{
-                fontSize: wp(5),
-                fontWeight: "bold",
-                color: "white",
-              }}
+              style={{ fontSize: wp(5), fontWeight: "bold", color: "white" }}
             >
               Review
             </Text>

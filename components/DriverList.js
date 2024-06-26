@@ -15,36 +15,55 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useNavigation } from "@react-navigation/native";
-import { useDriverModels } from "../hooks/driver.api";
 
-function DriverList() {
+function DriverList({ drivers, driversError, driversLoading }) {
   const navigation = useNavigation();
-  const { data: drivers, error, isloading } = useDriverModels();
-  if (isloading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#3b82f6" />
-      </View>
-    );
-  }
 
   // Render error state
-  if (error) {
+  if (driversError) {
+    console.log(driversError);
     return (
       <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>Error: {error.message}</Text>
+        <Text style={styles.errorText}>
+          Error: {driversError ? driversError.message : ""}
+        </Text>
       </View>
     );
   }
+
   return (
-    <View className="mx-4 flex-row justify-between flex-wrap">
-      {drivers?.data?.map((item, index) => {
-        return <DriverCard navigation={navigation} item={item} key={index} />;
-      })}
-    </View>
+    <>
+      {driversLoading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#3b82f6" />
+        </View>
+      ) : (
+        <View className="mx-4 flex-row justify-between flex-wrap">
+          {drivers?.data?.map((item, index) => {
+            let rating = 0;
+            if (item?.evaluations && item?.evaluations.length) {
+              const totalRating = item?.evaluations.reduce(
+                (sum, evaluation) => sum + evaluation.rating,
+                0
+              );
+              const avgRating = totalRating / item?.evaluations.length;
+              rating = avgRating;
+            }
+            return (
+              <DriverCard
+                navigation={navigation}
+                item={item}
+                rating={rating}
+                key={index}
+              />
+            );
+          })}
+        </View>
+      )}
+    </>
   );
 }
-const DriverCard = ({ item, navigation }) => {
+const DriverCard = ({ item, navigation, rating }) => {
   return (
     <TouchableOpacity
       onPress={() => navigation.navigate("Driver", { driverId: item.id })}
@@ -71,7 +90,7 @@ const DriverCard = ({ item, navigation }) => {
       <View className=" flex-row space-x-2  rounded-full ">
         <FontAwesome name="star" size={wp(5.5)} color="#F4D03F" />
         <Text style={{ fontSize: wp(4) }} className="text-white">
-          {item.rating}
+          {rating || "No Rating"}
         </Text>
       </View>
 
@@ -85,7 +104,7 @@ const DriverCard = ({ item, navigation }) => {
         style={{ fontSize: wp(4) }}
         className="text-white font font-semibold"
       >
-        {item.price}
+        {item.price} TN
       </Text>
     </TouchableOpacity>
   );

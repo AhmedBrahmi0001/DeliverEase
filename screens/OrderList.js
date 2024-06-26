@@ -29,7 +29,9 @@ function OrderItem({ order, onDelete }) {
     >
       <View style={styles.orderInfoContainer}>
         <Text style={styles.orderName}>{order?.code}</Text>
+        <Text style={styles.textorder}>Pickup_address</Text>
         <Text style={styles.orderAddress}>{order?.pickup_address}</Text>
+        <Text style={styles.textorder}>Pickup_address</Text>
         <Text style={styles.orderAddress}>{order?.deliver_address}</Text>
       </View>
       <View style={styles.buttonContainer}>
@@ -137,6 +139,11 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
+  textorder: {
+    color: "#666",
+    fontSize: 14,
+    marginBottom: 4,
+  },
   buttonContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -154,6 +161,6 @@ const styles = StyleSheet.create({
   },
   orderAddress: {
     fontSize: 14,
-    color: "#666",
+    color: "#007BFF",
   },
 });

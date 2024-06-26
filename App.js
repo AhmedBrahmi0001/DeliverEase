@@ -28,6 +28,8 @@ import TrackTripsScreen from "./screens/TrackTripsScreen";
 import ReviewScreen from "./screens/ReviewScreen";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ComplaintScreen from "./screens/ComplaintScreen";
+import TermsOfServiceScreen from "./screens/TermsOfServiceScreen";
+import PrivacyPolicyScreen from "./screens/PrivacyPolicyScreen";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -137,6 +139,16 @@ function App() {
               component={TripDetailsScreen}
             />
             <Stack.Screen
+              name="terms"
+              options={{ headerShown: false }}
+              component={TermsOfServiceScreen}
+            />
+            <Stack.Screen
+              name="privacy"
+              options={{ headerShown: false }}
+              component={PrivacyPolicyScreen}
+            />
+            <Stack.Screen
               name="Enable"
               options={{ headerShown: false }}
               component={EnableLocationScreen}
@@ -200,7 +212,7 @@ function HomeTabs() {
       />
       <Tab.Screen
         name="DetailsOrder"
-        component={NewScreen}
+        component={ComplaintScreen}
         options={{
           title: "Details",
           // tabBarInactiveTintColor: "white",
@@ -212,7 +224,7 @@ function HomeTabs() {
       />
       <Tab.Screen
         name="chats"
-        component={ReviewScreen}
+        component={NotificationsScreen}
         options={{
           title: "Chats",
           // tabBarInactiveTintColor: "white",
@@ -222,7 +234,7 @@ function HomeTabs() {
       />
       <Tab.Screen
         name="Settings"
-        component={ComplaintScreen}
+        component={SettingsScreen}
         options={{
           title: "Settings",
           // tabBarInactiveTintColor: "white",

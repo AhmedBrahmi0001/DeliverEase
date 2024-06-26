@@ -2,9 +2,10 @@ import React, { useState, useCallback } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import RangeSlider from "rn-range-slider";
 
-const PriceSlider = () => {
-  const [low, setLow] = useState(0);
-  const [high, setHigh] = useState(400);
+const PriceSlider = ({ low, high,setLow,
+setHigh}) => {
+  // const [low, setLow] = useState(0);
+  // const [high, setHigh] = useState(400);
 
   const handleValueChange = useCallback((newLow, newHigh) => {
     setLow(newLow);

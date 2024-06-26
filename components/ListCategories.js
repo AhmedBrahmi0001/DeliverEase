@@ -6,7 +6,7 @@ import RateStar from "./RateStar";
 import { height } from "deprecated-react-native-prop-types/DeprecatedImagePropType";
 import Places from "./Places";
 
-const ListCategories = () => {
+const ListCategories = ({ low, high, setLow, setHigh, rating, setRating, selectedPlace, setSelectedPlace }) => {
   // State to track the selected button value
   const [value, setValue] = useState("");
 
@@ -117,9 +117,11 @@ const ListCategories = () => {
       />
 
       {/* Conditionally render components based on the selected value */}
-      {value === "price" && <PriceSlider />}
-      {value === "rate" && <RateStar />}
-      {value === "place" && <Places />}
+      {value === "price" && (
+        <PriceSlider low={low} high={high} setLow={setLow} setHigh={setHigh} />
+      )}
+      {value === "rate" && <RateStar rating={rating} setRating={setRating} />}
+      {value === "place" && <Places selectedPlace={selectedPlace} setSelectedPlace={setSelectedPlace} />}
     </SafeAreaView>
   );
 };

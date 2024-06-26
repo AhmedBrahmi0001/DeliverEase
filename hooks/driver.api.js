@@ -7,16 +7,25 @@ import {
 } from "@tanstack/react-query";
 import axiosClient from "../axiosClient";
 
-const fetchDriverModels = async () => {
-  const parsed = await axiosClient.get("drivers");
-  return parsed.data;
+const fetchDriverModels = async (filters) => {
+  const { low, high, rating, place } = filters;
+  const response = await axiosClient.get("drivers", {
+    params: {
+      low,
+      high,
+      rating,
+      place,
+    },
+  });
+  return response.data;
 };
 
-const useDriverModels = () =>
+const useDriverModels = (filters) =>
   useQuery({
-    queryKey: ["drivers"],
-    queryFn: () => fetchDriverModels(),
+    queryKey: ["drivers", filters],
+    queryFn: () => fetchDriverModels(filters),
   });
+
 
 const fetchDriverModel = async (driverId) => {
   const parsed = await axiosClient.get(`drivers/${driverId}`);

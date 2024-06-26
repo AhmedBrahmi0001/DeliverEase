@@ -59,13 +59,13 @@ export default function OrderScreen() {
               title="Privacy Policy"
               subtitle="View Privacy Policy"
               icon="lock"
-              href="/privacy-policy"
+              href="privacy"
             />
             <CustomSettingCard
               title="Terms of Service"
               subtitle="View Terms of Service"
               icon="file-text"
-              href="/terms-of-service"
+              href="terms"
             />
           </View>
           <TouchableOpacity

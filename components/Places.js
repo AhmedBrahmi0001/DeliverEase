@@ -13,9 +13,8 @@ import {
 } from "react-native-responsive-screen";
 import { usePlaceModels } from "../hooks/places.api";
 
-const Places = () => {
+const Places = ({ selectedPlace, setSelectedPlace }) => {
   const { data: places, error, isLoading } = usePlaceModels();
-  const [selectedPlace, setSelectedPlace] = useState(null);
 
   // Render loading state
   if (isLoading) {
@@ -58,7 +57,9 @@ const Places = () => {
               styles.placeButton,
               selectedPlace === place.id && styles.selectedPlaceButton,
             ]}
-            onPress={() => setSelectedPlace(place.id)}
+            onPress={() =>
+              setSelectedPlace(selectedPlace === place.id ? "" : place.id)
+            }
           >
             <Text
               style={[
