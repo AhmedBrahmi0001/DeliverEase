@@ -12,9 +12,13 @@ import {
 import { TextInput, Button } from "react-native-paper";
 import { FontAwesome } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useAuth } from "../context/AuthContext";
 
 export default function ProfileScreen() {
-  const [displayName, setDisplayName] = useState("John Doe");
+  //example get logged in user
+  const { user } = useAuth();
+
+  const [displayName, setDisplayName] = useState(user?.name);
   const [email, setEmail] = useState("user@example.com");
   const [phoneNumber, setPhoneNumber] = useState("123-456-7890");
   const [profilePicture, setProfilePicture] = useState(

@@ -11,29 +11,61 @@ import {
 import { TextInput, Button, Checkbox } from "react-native-paper";
 import { FontAwesome } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useAuth } from "../context/AuthContext"; // Adjust the path based on your project structure
+import { useNavigation } from "@react-navigation/native";
+import Pusher from "pusher-js/react-native";
 
 export default function SignInScreen() {
+  const navigation = useNavigation();
   const [emailOrUsername, setEmailOrUsername] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState(null);
 
-  const handleSignIn = () => {
+  const { login } = useAuth();
+
+  const handleSignIn = async () => {
     setLoading(true);
     setError("");
 
-    // Simulate sign-in process (replace with actual logic)
-    setTimeout(() => {
-      if (emailOrUsername && password) {
-        // Successful sign-in
-        console.log("Sign in successful!");
+    try {
+      const { data, error } = await login(emailOrUsername, password);
+      console.log(data, error);
+      if (error) {
+        // Make sure to convert the error to a string if it's an object
+        setError(error);
       } else {
-        // Failed sign-in
-        setError("Invalid email/username or password.");
+        console.log("Sign in successful!");
+        await initializePusher(data.id);
+
+        // Navigate to the next screen or update state as needed
       }
+      navigation.navigate("Home");
+    } catch (err) {
+      setError("An error occurred during sign-in.");
+      console.error(err);
+    } finally {
       setLoading(false);
-    }, 2000);
+    }
+  };
+
+  const initializePusher = async (id) => {
+    try {
+      const pusher = new Pusher('c6b76f4cdad62019b3f4', {
+        cluster: 'eu',
+        encrypted: true,
+      });
+
+      const channel = pusher.subscribe("App.Models.User." + id);
+      channel.bind('.action', function(data) {
+        console.log(`Event received: ${JSON.stringify(data)}`);
+      });
+
+      console.log("Pusher connected and subscribed to channel.");
+    } catch (err) {
+      console.error("Error initializing Pusher:", err);
+    }
   };
 
   return (
@@ -45,6 +77,7 @@ export default function SignInScreen() {
             style={styles.logo}
           />
           <Text style={styles.title}>Sign In</Text>
+          {error ? <Text style={styles.error}>{error?.message}</Text> : null}
           <View style={styles.inputContainer}>
             <TextInput
               label="Email or Username"
@@ -77,7 +110,7 @@ export default function SignInScreen() {
               <Text style={styles.forgotPassword}>Forgot Password?</Text>
             </TouchableOpacity>
           </View>
-          {error ? <Text style={styles.error}>{error}</Text> : null}
+
           <Button
             mode="contained"
             onPress={handleSignIn}
@@ -129,7 +162,7 @@ export default function SignInScreen() {
           </View>
           <Text
             style={styles.signUpText}
-            onPress={() => console.log("Sign up pressed")}
+            onPress={() => navigation.navigate("Registre")}
           >
             Don't have an account? Sign up
           </Text>

@@ -9,59 +9,50 @@ import {
 import { TextInput, Button } from "react-native-paper";
 import { FontAwesome } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useAuth } from "../context/AuthContext"; // Adjust the path based on your project structure
+import { useNavigation } from "@react-navigation/native";
 
 export default function RegisterScreen() {
+  const navigation = useNavigation();
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [fullName, setFullName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [profilePicture, setProfilePicture] = useState(null);
-  const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const { register } = useAuth(); // Destructure register function from AuthContext
 
-  const handleSignUp = () => {
+  const handleSignUp = async () => {
     setLoading(true);
+    setError("");
+
     // Validation
-    if (
-      !username ||
-      !email ||
-      !password ||
-      !confirmPassword ||
-      !fullName ||
-      !phoneNumber
-    ) {
+    if (!username || !email || !password || !phoneNumber) {
       setError("Please fill in all fields.");
       setLoading(false);
       return;
     }
-    if (password !== confirmPassword) {
-      setError("Passwords do not match.");
-      setLoading(false);
-      return;
-    }
-    if (!agreeToTerms) {
-      setError("Please agree to the terms and conditions.");
-      setLoading(false);
-      return;
-    }
 
-    // Additional logic for signing up the user
-    // This is where you would make API calls to register the user
-    console.log("Username:", username);
-    console.log("Email:", email);
-    console.log("Password:", password);
-    console.log("Full Name:", fullName);
-    console.log("Phone Number:", phoneNumber);
-    console.log("Profile Picture:", profilePicture);
-    console.log("Terms and Conditions Agreement:", agreeToTerms);
-
-    // Simulating a loading delay for demonstration purposes
-    setTimeout(() => {
+    try {
+      const { data, error } = await register(
+        username,
+        email,
+        password,
+        phoneNumber
+      );
+      if (error) {
+        console.log("error", error);
+        setError(error);
+      } else {
+        navigation.navigate("Home");
+        console.log("User registered successfully:", data);
+      }
+    } catch (err) {
+      setError("An unexpected error occurred.");
+      console.log("err", err);
+    } finally {
       setLoading(false);
-    }, 2000);
+    }
   };
 
   return (
@@ -69,7 +60,7 @@ export default function RegisterScreen() {
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View style={styles.container}>
           <Text style={styles.title}>Sign Up</Text>
-          {error ? <Text style={styles.error}>{error}</Text> : null}
+          {/* {error ? <Text style={styles.error}>{error}</Text> : null} */}
           <View style={styles.inputContainer}>
             <TextInput
               label="Username"
@@ -87,6 +78,7 @@ export default function RegisterScreen() {
               left={<FontAwesome name="envelope" size={24} color="black" />}
               style={styles.input}
             />
+            {error?.errors?.email ? <Text style={styles.error}>{error?.errors?.email}</Text> : null}
             <TextInput
               label="Password"
               value={password}
@@ -97,23 +89,6 @@ export default function RegisterScreen() {
               style={styles.input}
             />
             <TextInput
-              label="Confirm Password"
-              value={confirmPassword}
-              onChangeText={(text) => setConfirmPassword(text)}
-              mode="outlined"
-              secureTextEntry
-              left={<FontAwesome name="lock" size={24} color="black" />}
-              style={styles.input}
-            />
-            <TextInput
-              label="Full Name"
-              value={fullName}
-              onChangeText={(text) => setFullName(text)}
-              mode="outlined"
-              left={<FontAwesome name="user" size={24} color="black" />}
-              style={styles.input}
-            />
-            <TextInput
               label="Phone Number"
               value={phoneNumber}
               onChangeText={(text) => setPhoneNumber(text)}
@@ -121,21 +96,7 @@ export default function RegisterScreen() {
               left={<FontAwesome name="phone" size={24} color="black" />}
               style={styles.input}
             />
-            {/* Terms and Conditions checkbox */}
-            <View style={styles.termsContainer}>
-              <TouchableOpacity onPress={() => setAgreeToTerms(!agreeToTerms)}>
-                <FontAwesome
-                  name={agreeToTerms ? "check-square" : "square-o"}
-                  size={24}
-                  color={agreeToTerms ? "green" : "black"}
-                />
-              </TouchableOpacity>
-              <Text style={styles.termsText}>
-                I agree to the terms and conditions
-              </Text>
-            </View>
           </View>
-          {/* Sign Up Button */}
           <Button
             mode="contained"
             onPress={handleSignUp}
@@ -207,16 +168,6 @@ const styles = StyleSheet.create({
   input: {
     width: "100%",
     marginBottom: 20,
-  },
-  termsContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  termsText: {
-    marginLeft: 10,
-    fontSize: 16,
-    color: "black",
   },
   signUpButton: {
     borderRadius: 8,

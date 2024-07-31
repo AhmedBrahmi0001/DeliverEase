@@ -75,9 +75,7 @@ const DriverScreen = (props) => {
     return (
       <View style={styles.errorContainer}>
         <Text style={styles.errorText}>
-          Error:{" "}
-          {driverError?.message ||
-            placeError?.message}
+          Error: {driverError?.message || placeError?.message}
         </Text>
       </View>
     );

@@ -9,22 +9,37 @@ import {
 import { TextInput, Button } from "react-native-paper";
 import { FontAwesome } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useAuth } from "../context/AuthContext";
 
-export default function SignUpScreen() {
+export default function SignUpScreen({ navigation }) {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [error, setError] = useState("");
 
-  const handleSignUp = () => {
+  const { register } = useAuth();
+
+  const handleSignUp = async () => {
     // Basic validation
-    if (!email || !password) {
+    if (!name || !email || !password || !phoneNumber) {
       setError("Please fill in all fields.");
       return;
     }
 
-    // Additional logic to sign up the user
-    console.log("Email:", email);
-    console.log("Password:", password);
+    // Register the user
+    const { data, error: registrationError } = await register(
+      name,
+      email,
+      password,
+      phoneNumber
+    );
+    if (registrationError) {
+      setError(registrationError);
+    } else {
+      // Navigate to the desired screen upon successful registration
+      navigation.navigate("Home"); // Change "Home" to the screen you want to navigate to
+    }
   };
 
   return (
@@ -33,6 +48,14 @@ export default function SignUpScreen() {
         <Text style={styles.title}>Sign Up</Text>
         {error ? <Text style={styles.error}>{error}</Text> : null}
         <View style={styles.inputContainer}>
+          <TextInput
+            label="Name"
+            value={name}
+            onChangeText={(text) => setName(text)}
+            mode="outlined"
+            left={<FontAwesome name="user" size={24} color="black" />}
+            style={styles.input}
+          />
           <TextInput
             label="Email"
             value={email}
@@ -48,6 +71,14 @@ export default function SignUpScreen() {
             mode="outlined"
             secureTextEntry
             left={<FontAwesome name="lock" size={24} color="black" />}
+            style={styles.input}
+          />
+          <TextInput
+            label="Phone Number"
+            value={phoneNumber}
+            onChangeText={(text) => setPhoneNumber(text)}
+            mode="outlined"
+            left={<FontAwesome name="phone" size={24} color="black" />}
             style={styles.input}
           />
         </View>
@@ -68,7 +99,7 @@ export default function SignUpScreen() {
         >
           Sign Up with Google
         </Button>
-        <TouchableOpacity onPress={() => Linking.openURL("/login")}>
+        <TouchableOpacity onPress={() => navigation.navigate("SignIn")}>
           <Text style={styles.link}>Already have an account? Log in here.</Text>
         </TouchableOpacity>
       </View>

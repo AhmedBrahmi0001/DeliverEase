@@ -5,7 +5,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
-  Image,
   ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -44,6 +43,26 @@ const TrackTripsScreen = () => {
       setFilteredOrders(filteredOrders);
     }
   }, [activeTab, orders]);
+
+  // Function to get color based on etat
+  const getStatusColor = (etat) => {
+    switch (etat) {
+      case "pending":
+        return "#FFA500"; // Orange
+      case "accepted":
+        return "#3b82f6"; // Blue
+      case "ongoing":
+        return "#1e90ff"; // Light Blue
+      case "delivered":
+        return "#32CD32"; // LimeGreen
+      case "rejected":
+        return "#FF0000"; // Red
+      case "cancelled":
+        return "#A9A9A9"; // DarkGray
+      default:
+        return "#000000"; // Black
+    }
+  };
 
   // Render loading state
   if (isLoading) {
@@ -130,20 +149,15 @@ const TrackTripsScreen = () => {
             </View>
 
             <View style={styles.tripFooter}>
-              {/* 
-              // Render driver information if needed
-              {order.driver?.image && (
-                <Image
-                  source={{ uri: order.driver.image }}
-                  style={styles.driverImage}
-                />
-              )}
-                <Text style={styles.drivername}>{order.driver?.name}</Text>
-              
-              */}
-
               <Text style={styles.texttripAddress}>Etat : </Text>
-              <Text style={styles.tripStatus}> {order?.etat}</Text>
+              <Text
+                style={[
+                  styles.tripStatus,
+                  { color: getStatusColor(order?.etat) },
+                ]}
+              >
+                {order?.etat}
+              </Text>
             </View>
             {/*<View style={styles.detailsButton}>
               <Text style={styles.detailsButtonText}>View details</Text>
@@ -250,7 +264,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   tripStatus: {
-    color: "green",
     fontSize: 16,
     fontWeight: "bold",
   },
