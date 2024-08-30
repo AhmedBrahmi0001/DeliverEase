@@ -17,12 +17,11 @@ import { useAuth } from "../context/AuthContext";
 export default function ProfileScreen() {
   //example get logged in user
   const { user } = useAuth();
-
   const [displayName, setDisplayName] = useState(user?.name);
-  const [email, setEmail] = useState("user@example.com");
-  const [phoneNumber, setPhoneNumber] = useState("123-456-7890");
+  const [email, setEmail] = useState(user?.email);
+  const [phoneNumber, setPhoneNumber] = useState(user?.phone);
   const [profilePicture, setProfilePicture] = useState(
-    require("../assets/images/welcome.png")
+    require("../assets/images/persona.jpg")
   );
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -107,7 +106,7 @@ export default function ProfileScreen() {
             }
             style={styles.input}
           />
-          <TextInput
+          {/* <TextInput
             label="New Password"
             value={newPassword}
             onChangeText={(text) => setNewPassword(text)}
@@ -119,8 +118,8 @@ export default function ProfileScreen() {
               />
             }
             style={styles.input}
-          />
-          <TextInput
+          /> */}
+          {/* <TextInput
             label="Confirm New Password"
             value={confirmPassword}
             onChangeText={(text) => setConfirmPassword(text)}
@@ -132,7 +131,7 @@ export default function ProfileScreen() {
               />
             }
             style={styles.input}
-          />
+          /> */}
         </View>
         {loading ? (
           <ActivityIndicator size="large" color="#007bff" />

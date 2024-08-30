@@ -20,8 +20,8 @@ const screenHeight = Dimensions.get("window").height;
 
 const TrackingScreen = () => {
   const [driverLocation, setDriverLocation] = useState({
-    latitude: 37.7749, // Initial latitude
-    longitude: -122.4194, // Initial longitude
+    latitude: 35.8256, // Initial latitude
+    longitude: 10.638, // Initial longitude
   });
   const [destination, setDestination] = useState(null);
   const [routeCoordinates, setRouteCoordinates] = useState([]);
@@ -62,8 +62,8 @@ const TrackingScreen = () => {
   useEffect(() => {
     if (driverLocation.latitude !== 0 && driverLocation.longitude !== 0) {
       setDestination({
-        latitude: 37.78825, // Destination latitude
-        longitude: -122.4324, // Destination longitude
+        latitude: 35.777, // Destination latitude
+        longitude: 10.8262, // Destination longitude
       });
     }
   }, [driverLocation]);
@@ -75,7 +75,7 @@ const TrackingScreen = () => {
   const handleAccept = () => {
     if (tripState === "En Route") {
       setTripState("Trip Details");
-    } else if (tripState === "Trip Details") {
+    } else if (tripState === "Trip a") {
       setTripState("Trip Ended");
     } else if (tripState === "Trip Ended") {
       setTripState("En Route");
@@ -116,7 +116,7 @@ const TrackingScreen = () => {
           strokeColor="#3b82f6"
         />
       </MapView>
-      
+
       <TouchableOpacity style={styles.tripDetailsButton} onPress={toggleModal}>
         <Text style={styles.tripDetailsButtonText}>Show Trip Details</Text>
       </TouchableOpacity>
@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
   map: {
     ...StyleSheet.absoluteFillObject,
   },
-  
+
   tripDetailsButton: {
     position: "absolute",
     bottom: 100,
@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 10,
     alignItems: "center",
-    opacity:0.7,
+    opacity: 0.7,
   },
   tripDetailsButtonText: {
     fontSize: 18,

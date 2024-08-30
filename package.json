@@ -8,7 +8,8 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "eslint .",
-    "format": "eslint --fix . && prettier --write ."
+    "format": "eslint --fix . && prettier --write .",
+    "postinstall": "node postinstall.js"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^1.23.1",
@@ -41,7 +42,10 @@
     "react-native-screens": "^3.31.1",
     "react-native-vector-icons": "^10.0.3",
     "reanimated-bottom-sheet": "^1.0.0-alpha.22",
-    "rn-range-slider": "^2.2.2"
+    "rn-range-slider": "^2.2.2",
+    "react-native-web": "~0.19.10",
+    "react-dom": "18.2.0",
+    "@expo/metro-runtime": "~3.2.3"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

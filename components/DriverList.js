@@ -15,13 +15,22 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useNavigation } from "@react-navigation/native";
+// import driver1 from "../assets/images/driver1.jpeg";
+// import driver2 from "../assets/images/driver2.jpeg";
+// import driver3 from "../assets/images/driver3.jpeg";
+// import driver4 from "../assets/images/driver4.jpeg";
 
 function DriverList({ drivers, driversError, driversLoading }) {
   const navigation = useNavigation();
+  // const images = {
+  //   driver1: driver1,
+  //   driver2: driver2,
+  //   driver3: driver3,
+  //   driver4: driver4,
+  // };
 
   // Render error state
   if (driversError) {
-    console.log(driversError);
     return (
       <View style={styles.errorContainer}>
         <Text style={styles.errorText}>
@@ -64,6 +73,9 @@ function DriverList({ drivers, driversError, driversLoading }) {
   );
 }
 const DriverCard = ({ item, navigation, rating }) => {
+  // {
+  //   console.log();
+  // }
   return (
     <TouchableOpacity
       onPress={() => navigation.navigate("Driver", { driverId: item.id })}
@@ -71,8 +83,13 @@ const DriverCard = ({ item, navigation, rating }) => {
       className="flex justify-end relative p-4 py-6 space-y-2 mb-5"
     >
       <Image
-        source={item.image}
-        style={{ width: wp(44), height: wp(65), borderRadius: 35 }}
+        source={{ uri: item.image }} // Ensure correct path to the local image
+        style={{
+          width: wp(44),
+          height: wp(65),
+          borderRadius: 35,
+          resizeMode: "cover",
+        }}
         className="absolute"
       />
       <LinearGradient
@@ -90,7 +107,7 @@ const DriverCard = ({ item, navigation, rating }) => {
       <View className=" flex-row space-x-2  rounded-full ">
         <FontAwesome name="star" size={wp(5.5)} color="#F4D03F" />
         <Text style={{ fontSize: wp(4) }} className="text-white">
-          {rating || "No Rating"}
+          {item.rating}
         </Text>
       </View>
 
@@ -123,6 +140,11 @@ const styles = StyleSheet.create({
   errorText: {
     fontSize: 18,
     color: "red",
+  },
+  image: {
+    width: 200,
+    height: 200,
+    resizeMode: "contain",
   },
 });
 

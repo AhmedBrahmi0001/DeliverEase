@@ -31,7 +31,6 @@ export default function SignInScreen() {
 
     try {
       const { data, error } = await login(emailOrUsername, password);
-      console.log(data, error);
       if (error) {
         // Make sure to convert the error to a string if it's an object
         setError(error);
@@ -40,8 +39,8 @@ export default function SignInScreen() {
         await initializePusher(data.id);
 
         // Navigate to the next screen or update state as needed
+        navigation.navigate("Home");
       }
-      navigation.navigate("Home");
     } catch (err) {
       setError("An error occurred during sign-in.");
       console.error(err);
@@ -52,13 +51,13 @@ export default function SignInScreen() {
 
   const initializePusher = async (id) => {
     try {
-      const pusher = new Pusher('c6b76f4cdad62019b3f4', {
-        cluster: 'eu',
+      const pusher = new Pusher("c6b76f4cdad62019b3f4", {
+        cluster: "eu",
         encrypted: true,
       });
 
       const channel = pusher.subscribe("App.Models.User." + id);
-      channel.bind('.action', function(data) {
+      channel.bind(".action", function (data) {
         console.log(`Event received: ${JSON.stringify(data)}`);
       });
 
@@ -72,10 +71,12 @@ export default function SignInScreen() {
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <ScrollView contentContainerStyle={styles.scrollView}>
         <View style={styles.container}>
-          <Image
-            source={require("../assets/images/welcome.png")}
-            style={styles.logo}
-          />
+          <View style={styles.logoContainer}>
+            <Image
+              source={require("../assets/images/logo0.png")}
+              style={styles.logo}
+            />
+          </View>
           <Text style={styles.title}>Sign In</Text>
           {error ? <Text style={styles.error}>{error?.message}</Text> : null}
           <View style={styles.inputContainer}>
@@ -198,6 +199,16 @@ const styles = StyleSheet.create({
     color: "#333",
     textAlign: "center",
   },
+  logoContainer: {
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 5, // Elevation for Android shadow
+    backgroundColor: "transparent", // Ensures background color doesn't affect the shadow
+    padding: 5, // Add some padding around the logo
+    borderRadius: 18, // Rounded corners for the container
+  },
   inputContainer: {
     width: "100%",
     marginBottom: 20,
@@ -253,5 +264,19 @@ const styles = StyleSheet.create({
   signUpText: {
     fontSize: 16,
     color: "#007bff",
+  },
+  logo: {
+    width: 120, // Width of the logo
+    height: 100, // Height of the logo
+    resizeMode: "stretch", // Preserve aspect ratio
+    borderRadius: 18, // Slightly rounded corners for the image
+    borderWidth: 2, // Thin border width
+    borderColor: "#007bff", // Border color to make it stand out
+    backgroundColor: "white", // Background color for a clean look
+    shadowColor: "#000", // Shadow color
+    shadowOffset: { width: 0, height: 4 }, // Shadow offset
+    shadowOpacity: 0.2, // Shadow opacity
+    shadowRadius: 8, // Shadow radius
+    elevation: 3, // Elevation for Android shadow
   },
 });

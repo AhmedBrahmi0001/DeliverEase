@@ -26,7 +26,6 @@ const useDriverModels = (filters) =>
     queryFn: () => fetchDriverModels(filters),
   });
 
-
 const fetchDriverModel = async (driverId) => {
   const parsed = await axiosClient.get(`drivers/${driverId}`);
   return parsed.data;

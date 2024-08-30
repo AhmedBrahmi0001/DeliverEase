@@ -196,7 +196,7 @@ const DriverScreen = (props) => {
             <Text
               style={{ fontSize: wp(5.8), marginLeft: wp(2), color: "#334155" }}
             >
-              {averageRating.toFixed(1)}
+              {driver.rating}
             </Text>
           </View>
           {/*<Text style={{ fontSize: wp(4), color: "#334155", marginTop: hp(2) }}>

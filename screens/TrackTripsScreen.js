@@ -11,6 +11,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { FontAwesome } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { useOrderModels } from "../hooks/order.api";
+import SearchField from "../components/SearchField";
+
 import moment from "moment";
 
 const TrackTripsScreen = () => {
@@ -18,6 +20,7 @@ const TrackTripsScreen = () => {
   const { data: orders, error, isLoading } = useOrderModels();
   const [activeTab, setActiveTab] = useState("Past");
   const [filteredOrders, setFilteredOrders] = useState([]);
+  const [searchText, setSearchText] = useState("");
 
   // Function to filter orders based on created_at date
   useEffect(() => {
@@ -28,21 +31,32 @@ const TrackTripsScreen = () => {
       const filteredOrders = orders.data.filter((order) => {
         const orderDate = moment(order.created_at).startOf("day");
 
+        // Filter based on date
         switch (activeTab) {
           case "Current":
-            return orderDate.isSame(currentDate, "day");
-
+            if (!orderDate.isSame(currentDate, "day")) return false;
+            break;
           case "Past":
-            return orderDate.isBefore(currentDate, "day");
-
+            if (!orderDate.isBefore(currentDate, "day")) return false;
+            break;
           default:
-            return true; // Default case, return all orders
+            break; // Default case, return all orders
         }
+
+        // Filter based on search text
+        if (
+          searchText &&
+          !order.driver?.name.toLowerCase().includes(searchText.toLowerCase())
+        ) {
+          return false;
+        }
+
+        return true;
       });
 
       setFilteredOrders(filteredOrders);
     }
-  }, [activeTab, orders]);
+  }, [activeTab, orders, searchText]);
 
   // Function to get color based on etat
   const getStatusColor = (etat) => {
@@ -93,6 +107,7 @@ const TrackTripsScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <SearchField onSearch={setSearchText} />
       <View style={styles.tabsContainer}>
         <TouchableOpacity
           style={[styles.tab, activeTab === "Current" && styles.activeTab]}
@@ -139,6 +154,8 @@ const TrackTripsScreen = () => {
               <Text style={styles.tripAddress}>{order?.pickup_address}</Text>
               <Text style={styles.texttripAddress}>deliver_address</Text>
               <Text style={styles.tripAddress}>{order?.deliver_address}</Text>
+              <Text style={styles.texttripAddress}>driver_name</Text>
+              <Text style={styles.drivername}>river{order.driver?.name}</Text>
               <View style={styles.quantityRow}>
                 <Text style={styles.texttripAddress}>Quantity :</Text>
                 <Text style={styles.textquantity}>
@@ -187,6 +204,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     alignItems: "center",
     backgroundColor: "white",
+    marginTop: 10,
   },
   activeTab: {
     backgroundColor: "#1e90ff",
@@ -200,6 +218,13 @@ const styles = StyleSheet.create({
   },
   scrollViewContent: {
     paddingBottom: 16,
+  },
+  drivername: {
+    color: "black",
+    fontSize: 14,
+    fontWeight: "bold",
+    marginBottom: 4,
+    marginLeft: 4,
   },
   tripCard: {
     backgroundColor: "white",
